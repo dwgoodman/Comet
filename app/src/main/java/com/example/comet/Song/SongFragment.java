@@ -20,7 +20,6 @@ import com.example.comet.Album.AlbumModel;
 import com.example.comet.Artist.ArtistAdapter;
 import com.example.comet.Constants;
 import com.example.comet.R;
-import com.example.comet.TopBarAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +47,6 @@ public class SongFragment extends Fragment {
     TextView songDurationText;
     SongAdapter songAdapter;
     ArtistAdapter artistAdapter;
-    TopBarAdapter topBarAdapter;
 
     private ArrayList<MusicModel> musicList;
     private ArrayList<AlbumModel> albumList;
