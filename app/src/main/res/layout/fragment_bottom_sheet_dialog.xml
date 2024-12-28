@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PlayerBottomSheetFragment"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/mini_player_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+        <!-- Include Mini Player Layout -->
+        <include layout="@layout/fragment_now_playing_bottom" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/full_player_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <!-- Include Full Player Layout -->
+        <include layout="@layout/activity_music_player" />
+    </RelativeLayout>
+
+
+</LinearLayout>

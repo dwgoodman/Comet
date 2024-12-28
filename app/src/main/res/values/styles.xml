@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here -->
+        <item name="colorPrimaryDark">#796f9e</item>
+        <item name="colorPrimary">@color/lightPurple</item>
+        <item name="colorAccent">@color/suisei</item>
+        <item name="android:windowBackground">@color/main_background</item>
+        <!-- Other style properties -->
+    </style>
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_peekHeight">400dp</item> <!-- Adjust this value as needed -->
+        <item name="behavior_hideable">false</item> <!-- Set to true if you want the sheet to be hideable -->
+    </style>
+</resources>

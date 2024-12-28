@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="almost_black">#585858</color>
+    <color name="main_background">#393838</color>
+    <color name="lightPurple">#E6E6FA</color>
+    <color name="tab_background">#ADADC8</color>
+    <color name="suisei">#7AB3F4</color>
+</resources>
