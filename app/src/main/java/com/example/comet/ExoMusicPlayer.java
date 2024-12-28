@@ -51,7 +51,7 @@ import java.util.concurrent.ExecutionException;
 public class ExoMusicPlayer extends AppCompatActivity {
     //todo there are a lot of performance improvements that can be done in here listed below
     //basically I'm making UI calls willy nilly and that can be heavily condensed(maybe not as much now)
-    //I need to condense where I am making the glide calls because for each state change or each instantiation I am calling the glide multiple times
+    //I need to condense where I am making the glide calls because for each state change or each instantiation I am calling glide multiple times
     private TextView songTitle, albumAndArtistTitle, currentTime, totalTime;
     private ImageView pausePlayButton, skipForward, skipBackwards, shuffleButton, repeatButton, songPlayerImage, minimizeButton;
     private ConstraintLayout musicActivityLayout;
