@@ -37,16 +37,6 @@ public class SongFragment extends Fragment {
 //    ListView mainBodyListView;
     private RecyclerView songRecyclerView;
     private GridLayoutManager gridLayoutManager;
-    Button playlistButton;
-    Button artistButton;
-    Button genreButton;
-    Button songButton;
-    Button albumButton;
-    TextView songNameText;
-    TextView songArtistText;
-    TextView songDurationText;
-    SongAdapter songAdapter;
-    ArtistAdapter artistAdapter;
 
     private ArrayList<MusicModel> musicList;
     private ArrayList<AlbumModel> albumList;
@@ -56,11 +46,6 @@ public class SongFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters
-     * @return A new instance of fragment MainDisplayFragment.
-     */
     public static SongFragment newInstance(ArrayList<MusicModel> musicList, ArrayList<AlbumModel> albumsList) {
         SongFragment fragment = new SongFragment();
         Bundle args = new Bundle();

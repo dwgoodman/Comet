@@ -11,6 +11,7 @@ public class Constants {
     public static final String SONGS_PARAM = "songs_param";
     public static final String ALBUMS_PARAM = "albums_param";
     public static final String ARTISTS_PARAM = "artists_param";
+    public static final String PLAYLISTS_PARAM = "playlists_param";
 
     public static final String ACTION_PLAY = "com.example.musicplayer.action.PLAY";
     public static final String ACTION_PAUSE = "com.example.musicplayer.action.PAUSE";

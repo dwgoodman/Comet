@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.viewpager.widget.ViewPager;
@@ -30,9 +31,14 @@ import com.example.comet.Album.AlbumListFromArtistFragment;
 import com.example.comet.Album.AlbumModel;
 import com.example.comet.Artist.ArtistFragment;
 import com.example.comet.Artist.ArtistModel;
+import com.example.comet.Playlist.PlaylistFragment;
 import com.example.comet.Song.MusicModel;
 import com.example.comet.Song.SongFragment;
 import com.example.comet.Song.SongListFromAlbumFragment;
+import com.example.comet.ViewModel.AlbumViewModel;
+import com.example.comet.ViewModel.ArtistViewModel;
+import com.example.comet.ViewModel.MusicViewModel;
+import com.example.comet.ViewModel.PlaylistViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 
@@ -156,6 +162,14 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         });
 
 
+        //ViewModel integration
+        MusicViewModel musicViewModel = new ViewModelProvider(this).get(MusicViewModel.class);
+        AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
+        ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
+        PlaylistViewModel playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
+
+
+
 
 //        FrameLayout bottomSheet = findViewById(R.id.bottom_sheet);
 //        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -259,9 +273,16 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         ArtistFragment artistFragment = new ArtistFragment();
         artistFragment.setArguments(bundle2);
 
+        //todo update to actually use playlistList when it is created
+        Bundle bundle3 = new Bundle();
+        bundle3.putParcelableArrayList(Constants.PLAYLISTS_PARAM, artistList);
+        PlaylistFragment playlistFragment = new PlaylistFragment();
+        playlistFragment.setArguments(bundle3);
+
         adapter.addFragment(songFragment, "Songs");
         adapter.addFragment(albumFragment, "Albums");
         adapter.addFragment(artistFragment, "Artists");
+        adapter.addFragment(playlistFragment, "Playlists");
 
 
         ViewPager viewPager = findViewById(R.id.viewPager);
