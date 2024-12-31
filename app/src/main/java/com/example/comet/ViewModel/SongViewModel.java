@@ -4,15 +4,21 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.comet.MusicRepository;
 import com.example.comet.Song.MusicModel;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class MusicViewModel extends ViewModel {
+public class SongViewModel extends ViewModel {
+    private final MusicRepository repository;
     private final MutableLiveData<List<MusicModel>> songList = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isDescending = new MutableLiveData<>(true);
+
+    public SongViewModel(MusicRepository repository) {
+        this.repository = repository;
+    }
 
     public LiveData<List<MusicModel>> getSongList() {
         return songList;

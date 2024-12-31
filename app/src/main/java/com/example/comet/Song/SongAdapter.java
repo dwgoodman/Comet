@@ -23,6 +23,7 @@ import com.example.comet.R;
 import com.example.comet.UtilMethods;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
 
@@ -66,7 +67,6 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
             @Override
             public void onClick(View view) {
                 //start player service
-                //todo work on later, have Mr. GPT help guide me through this
 //                if(!isServiceRunning(MusicService.class)){
 //                    context.startService(new Intent(context.getApplicationContext(), MusicService.class));
 //                }
@@ -83,6 +83,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.viewHolder> {
                 context.startActivity(intent);
             }
         });
+    }
+
+    public void updateSongs(List<MusicModel> newSongs) {
+        this.songsList.clear();
+        this.songsList.addAll(newSongs);
+        notifyDataSetChanged();
     }
 
     @Override

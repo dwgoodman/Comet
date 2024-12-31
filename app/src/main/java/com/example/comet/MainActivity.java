@@ -35,9 +35,10 @@ import com.example.comet.Playlist.PlaylistFragment;
 import com.example.comet.Song.MusicModel;
 import com.example.comet.Song.SongFragment;
 import com.example.comet.Song.SongListFromAlbumFragment;
+import com.example.comet.Song.SongViewModelFactory;
 import com.example.comet.ViewModel.AlbumViewModel;
 import com.example.comet.ViewModel.ArtistViewModel;
-import com.example.comet.ViewModel.MusicViewModel;
+import com.example.comet.ViewModel.SongViewModel;
 import com.example.comet.ViewModel.PlaylistViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
@@ -45,6 +46,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements  AlbumFragment.AlbumFragmentListener, ArtistFragment.ArtistFragmentListener, AlbumListFromArtistFragment.AlbumListFromArtistFragmentListener, SongListFromAlbumFragment.SongListFromAlbumFragmentListener {
 
@@ -71,31 +73,22 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
             return;
         }
 
-        String[] projection = {
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.DATE_ADDED
-        };
+        //grabbing data from Media Store
+        MusicRepository musicRepository = new MusicRepository(this);
+        SongViewModelFactory factory = new SongViewModelFactory(musicRepository);
+        SongViewModel songViewModel = new ViewModelProvider(this, factory).get(SongViewModel.class);
 
-        //only taking music from media store
-        String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
+        List<MusicModel> queriedSongs = musicRepository.querySongs();
+        songViewModel.loadSongs(queriedSongs);
 
-        //query the media store for my selected audio parameters
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, MediaStore.Audio.Media.TITLE);
+        //todo finish these setups
+        //ViewModel integration
+        AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
+        ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
+        PlaylistViewModel playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
 
 
-        //iterating over selected parameters and adding to the custom model
-        while(cursor.moveToNext()){
-            MusicModel musicData = new MusicModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
-            if(new File(musicData.getPath()).exists()) {
-                musicList.add(musicData);
-            }
-        }
-        cursor.close();
+
 
         //creating new projection/cursor to fill albumModel
         String[] projection1 = {
@@ -162,11 +155,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         });
 
 
-        //ViewModel integration
-        MusicViewModel musicViewModel = new ViewModelProvider(this).get(MusicViewModel.class);
-        AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
-        ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
-        PlaylistViewModel playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
+
 
 
 
