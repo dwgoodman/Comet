@@ -319,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         });
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onResume() {
         super.onResume();
@@ -353,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         }
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private boolean isMusicServiceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -364,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
     }
 
     //todo restores the playback state i.e. reinitializes the ExoMusicPlayer screen with the last saved song after the notification is dismissed
+    @OptIn(markerClass = UnstableApi.class)
     private void restorePlaybackState() {
         SharedPreferences preferences = getSharedPreferences("MusicPrefs", MODE_PRIVATE);
         String lastSong = preferences.getString("lastSong", null);

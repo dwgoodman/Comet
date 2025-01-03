@@ -32,6 +32,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
@@ -50,6 +51,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
+@UnstableApi
 public class ExoMusicPlayer extends AppCompatActivity {
     //todo there are a lot of performance improvements that can be done in here listed below
     //basically I'm making UI calls willy nilly and that can be heavily condensed(maybe not as much now)

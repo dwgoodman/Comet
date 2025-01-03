@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.comet.util.Constants;
@@ -49,6 +51,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.BindingViewHol
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @OptIn(markerClass = UnstableApi.class)
             @Override
             public void onClick(View view) {
                 MyMediaPlayer.currentIndex = holder.getBindingAdapterPosition();
