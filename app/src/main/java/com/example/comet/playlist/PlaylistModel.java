@@ -1,14 +1,14 @@
-package com.example.comet.Playlist;
+package com.example.comet.playlist;
 
-import com.example.comet.Song.MusicModel;
+import com.example.comet.song.SongModel;
 
 import java.util.List;
 
 public class PlaylistModel {
     private String name;
-    private List<MusicModel> songs;
+    private List<SongModel> songs;
 
-    public PlaylistModel(String name, List<MusicModel> songs) {
+    public PlaylistModel(String name, List<SongModel> songs) {
         this.name = name;
         this.songs = songs;
     }
@@ -17,7 +17,7 @@ public class PlaylistModel {
         return name;
     }
 
-    public List<MusicModel> getSongs() {
+    public List<SongModel> getSongs() {
         return songs;
     }
 
@@ -25,7 +25,7 @@ public class PlaylistModel {
         this.name = name;
     }
 
-    public void setSongs(List<MusicModel> songs) {
+    public void setSongs(List<SongModel> songs) {
         this.songs = songs;
     }
 }

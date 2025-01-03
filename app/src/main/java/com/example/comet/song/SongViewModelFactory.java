@@ -1,13 +1,11 @@
-package com.example.comet.Song;
+package com.example.comet.song;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.comet.MusicRepository;
-import com.example.comet.ViewModel.SongViewModel;
-
-import java.util.List;
+import com.example.comet.viewmodel.SongViewModel;
 
 public class SongViewModelFactory implements ViewModelProvider.Factory {
     private final MusicRepository repository;

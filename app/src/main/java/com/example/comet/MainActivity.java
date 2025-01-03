@@ -26,31 +26,31 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.comet.Album.AlbumFragment;
-import com.example.comet.Album.AlbumListFromArtistFragment;
-import com.example.comet.Album.AlbumModel;
-import com.example.comet.Artist.ArtistFragment;
-import com.example.comet.Artist.ArtistModel;
-import com.example.comet.Playlist.PlaylistFragment;
-import com.example.comet.Song.MusicModel;
-import com.example.comet.Song.SongFragment;
-import com.example.comet.Song.SongListFromAlbumFragment;
-import com.example.comet.Song.SongViewModelFactory;
-import com.example.comet.ViewModel.AlbumViewModel;
-import com.example.comet.ViewModel.ArtistViewModel;
-import com.example.comet.ViewModel.SongViewModel;
-import com.example.comet.ViewModel.PlaylistViewModel;
+import com.example.comet.album.AlbumFragment;
+import com.example.comet.album.AlbumListFromArtistFragment;
+import com.example.comet.album.AlbumModel;
+import com.example.comet.artist.ArtistFragment;
+import com.example.comet.artist.ArtistModel;
+import com.example.comet.playlist.PlaylistFragment;
+import com.example.comet.song.SongModel;
+import com.example.comet.song.SongFragment;
+import com.example.comet.song.SongListFromAlbumFragment;
+import com.example.comet.song.SongViewModelFactory;
+import com.example.comet.util.Constants;
+import com.example.comet.viewmodel.AlbumViewModel;
+import com.example.comet.viewmodel.ArtistViewModel;
+import com.example.comet.viewmodel.SongViewModel;
+import com.example.comet.viewmodel.PlaylistViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements  AlbumFragment.AlbumFragmentListener, ArtistFragment.ArtistFragmentListener, AlbumListFromArtistFragment.AlbumListFromArtistFragmentListener, SongListFromAlbumFragment.SongListFromAlbumFragmentListener {
 
-    ArrayList<MusicModel> musicList = new ArrayList<>();
+    ArrayList<SongModel> musicList = new ArrayList<>();
     ArrayList<AlbumModel> albumList = new ArrayList<>();
     ArrayList<ArtistModel> artistList = new ArrayList<>();
     public static boolean showHomeMusicPlayer = false;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         SongViewModelFactory factory = new SongViewModelFactory(musicRepository);
         SongViewModel songViewModel = new ViewModelProvider(this, factory).get(SongViewModel.class);
 
-        List<MusicModel> queriedSongs = musicRepository.querySongs();
+        List<SongModel> queriedSongs = musicRepository.querySongs();
         songViewModel.loadSongs(queriedSongs);
 
         //todo finish these setups
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
             Fragment currentFragment = getCurrentFragment(); // Determine the active fragment
 
             if (currentFragment instanceof SongFragment) {
-                showSortOptionsDialog((SongFragment) currentFragment);
+                showSortOptionsDialog(songViewModel);
             } else if (currentFragment instanceof AlbumFragment) {
                 showSortOptionsDialog((AlbumFragment) currentFragment);
             } else if (currentFragment instanceof ArtistFragment) {
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         }
     }
     @Override
-    public void toSongListFromAlbumFragment(ArrayList<MusicModel> songsList){
+    public void toSongListFromAlbumFragment(ArrayList<SongModel> songsList){
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance(songsList))
                 .addToBackStack(null)
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
 
 
     @Override
-    public void toSongsListFromAlbumRowFragment(ArrayList<MusicModel> songsList) {
+    public void toSongsListFromAlbumRowFragment(ArrayList<SongModel> songsList) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance(songsList))
                 .addToBackStack(null)
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         }
     }
 
-    void setUpTabs(ArrayList<MusicModel> musicList, ArrayList<AlbumModel> albumList, ArrayList<ArtistModel> artistList){
+    void setUpTabs(ArrayList<SongModel> musicList, ArrayList<AlbumModel> albumList, ArrayList<ArtistModel> artistList){
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         Bundle bundle = new Bundle();
@@ -404,23 +404,23 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         return ((ViewPagerAdapter) viewPager.getAdapter()).getItem(currentItem);
     }
 
-    private void showSortOptionsDialog(SongFragment fragment) {
+    private void showSortOptionsDialog(SongViewModel songViewModel) {
         String[] sortOptions = {"Title", "Artist", "Duration", "Date Added"};
         new AlertDialog.Builder(this)
                 .setTitle("Sort Songs By")
                 .setItems(sortOptions, (dialog, which) -> {
                     switch (which) {
                         case 0: // Title
-                            fragment.sortSongs(Comparator.comparing(MusicModel::getTitle), isDescending);
+                            songViewModel.sortSongs(Comparator.comparing(SongModel::getTitle), isDescending);
                             break;
                         case 1: // Artist
-                            fragment.sortSongs(Comparator.comparing(MusicModel::getArtist), isDescending);
+                            songViewModel.sortSongs(Comparator.comparing(SongModel::getArtist), isDescending);
                             break;
                         case 2: // Duration
-                            fragment.sortSongs(Comparator.comparing(MusicModel::getDuration), isDescending);
+                            songViewModel.sortSongs(Comparator.comparing(SongModel::getDuration), isDescending);
                             break;
                         case 3: // Date Added
-                            fragment.sortSongs(Comparator.comparing(MusicModel::getDateAdded), isDescending);
+                            songViewModel.sortSongs(Comparator.comparing(SongModel::getDateAdded), isDescending);
                             break;
                     }
                 })

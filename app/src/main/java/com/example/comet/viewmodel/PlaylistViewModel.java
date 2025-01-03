@@ -1,11 +1,11 @@
-package com.example.comet.ViewModel;
+package com.example.comet.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.comet.Playlist.PlaylistModel;
-import com.example.comet.Song.MusicModel;
+import com.example.comet.playlist.PlaylistModel;
+import com.example.comet.song.SongModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class PlaylistViewModel extends ViewModel {
         return playlistList;
     }
 
-    public void addPlaylist(String name, List<MusicModel> songs) {
+    public void addPlaylist(String name, List<SongModel> songs) {
         if (playlistList.getValue() != null) {
             List<PlaylistModel> updatedList = new ArrayList<>(playlistList.getValue());
             updatedList.add(new PlaylistModel(name, songs));

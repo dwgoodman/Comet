@@ -32,7 +32,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    buildToolsVersion = "33.0.1"
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
@@ -48,8 +48,9 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.5.1")
     implementation("androidx.media3:media3-common:1.5.1")
     implementation("androidx.media3:media3-session:1.5.1")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation ("androidx.databinding:databinding-runtime:8.7.3")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
     implementation ("androidx.cardview:cardview:1.0.0")
     testImplementation("junit:junit:4.13.2")

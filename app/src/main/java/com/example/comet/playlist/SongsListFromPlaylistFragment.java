@@ -1,4 +1,4 @@
-package com.example.comet.Playlist;
+package com.example.comet.playlist;
 
 import android.os.Bundle;
 

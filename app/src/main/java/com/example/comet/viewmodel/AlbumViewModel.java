@@ -1,10 +1,10 @@
-package com.example.comet.ViewModel;
+package com.example.comet.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.comet.Album.AlbumModel;
+import com.example.comet.album.AlbumModel;
 
 import java.util.ArrayList;
 import java.util.Comparator;

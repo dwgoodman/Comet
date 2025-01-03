@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
-import com.example.comet.Song.MusicModel;
+import com.example.comet.song.SongModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ public class MusicRepository {
         this.context = context;
     }
 
-    public List<MusicModel> querySongs() {
-        List<MusicModel> songList = new ArrayList<>();
+    public List<SongModel> querySongs() {
+        List<SongModel> songList = new ArrayList<>();
         String[] projection = {
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.TITLE,
@@ -39,7 +39,7 @@ public class MusicRepository {
 
         //iterating over selected parameters and adding to the custom model
         while (cursor.moveToNext()) {
-            MusicModel musicData = new MusicModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+            SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
             if (new File(musicData.getPath()).exists()) {
                 songList.add(musicData);
             }

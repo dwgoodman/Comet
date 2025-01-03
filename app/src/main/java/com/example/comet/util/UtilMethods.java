@@ -1,4 +1,4 @@
-package com.example.comet;
+package com.example.comet.util;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;

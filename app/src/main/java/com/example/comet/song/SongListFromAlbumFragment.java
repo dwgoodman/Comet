@@ -1,4 +1,4 @@
-package com.example.comet.Album;
+package com.example.comet.song;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -26,31 +26,33 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.comet.Constants;
+import com.example.comet.util.Constants;
 import com.example.comet.R;
-import com.example.comet.Song.MusicModel;
+import com.example.comet.util.UtilMethods;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAdapter.IAlbumRowAdapterInterface {
+public class SongListFromAlbumFragment extends Fragment {
 
-    private RecyclerView albumRecyclerView;
-    private ImageView albumArtistImage;
-    private ImageView backButton;
-    private TextView songsNumberAndTimeAlbum;
+    private RecyclerView songRecyclerView;
+    private ImageView songAlbumImage;
+    private  ImageView backButton;
+    private TextView songsNumberAndTime;
     private ConstraintLayout midBarLayout;
     private GridLayoutManager gridLayoutManager;
-    private ArrayList<AlbumModel> albumsList;
+    private ArrayList<SongModel> songsList;
 
-    public AlbumListFromArtistFragment() {
+
+    public SongListFromAlbumFragment() {
         // Required empty public constructor
     }
 
-    public static AlbumListFromArtistFragment newInstance(ArrayList<AlbumModel> albumsList) {
-        AlbumListFromArtistFragment fragment = new AlbumListFromArtistFragment();
+
+    public static SongListFromAlbumFragment newInstance(ArrayList<SongModel> songsList) {
+        SongListFromAlbumFragment fragment = new SongListFromAlbumFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Constants.ALBUMS_PARAM, albumsList);
+        args.putParcelableArrayList(Constants.SONGS_PARAM, songsList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,7 +61,7 @@ public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAda
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            albumsList = (ArrayList<AlbumModel>) getArguments().get(Constants.ALBUMS_PARAM);
+            songsList = (ArrayList<SongModel>) getArguments().get(Constants.SONGS_PARAM);
         }
     }
 
@@ -67,20 +69,22 @@ public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAda
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_album_list_from_artist, container, false);
+        View view = inflater.inflate(R.layout. fragment_song_list_from_album, container, false);
 
-        albumArtistImage = view.findViewById(R.id.artistAlbumImageAlbum);
-        songsNumberAndTimeAlbum = view.findViewById(R.id.songsNumberAndTimeAlbum);
-        midBarLayout = view.findViewById(R.id.midbarLayoutAlbum);
-        backButton = view.findViewById(R.id.backButtonAlbum);
+        songAlbumImage = view.findViewById(R.id.artistAlbumImageSong);
+        songsNumberAndTime = view.findViewById(R.id.songsNumberAndTime);
+        midBarLayout = view.findViewById(R.id.midbarLayoutSong);
+        backButton = view.findViewById(R.id.backButtonSong);
+
+
 
         Uri uri = ContentUris.withAppendedId(Constants.sArtworkUri,
-                Long.parseLong(albumsList.get(0).getId()));
+                Long.parseLong(songsList.get(0).getAlbumId()));
         Glide.with(getContext()).asBitmap().load(uri).placeholder(R.drawable.background_for_load)
                 .error(R.drawable.hoshi).centerCrop().into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        albumArtistImage.setImageBitmap(resource);
+                        songAlbumImage.setImageBitmap(resource);
                         Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
                             public void onGenerated(Palette palette) {
                                 Palette.Swatch swatch = palette.getVibrantSwatch();
@@ -88,10 +92,10 @@ public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAda
                                 if (swatch != null) {
                                     //swatch.getRgb in both slots will create a solid effect, can find a better color for gradient if wanted
                                     gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{swatch.getRgb(), swatch.getRgb()});
-                                    songsNumberAndTimeAlbum.setTextColor(swatch.getTitleTextColor());
+                                    songsNumberAndTime.setTextColor(swatch.getTitleTextColor());
                                 }else {
                                     gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x38393838, 0x38393838});
-                                    songsNumberAndTimeAlbum.setTextColor(Color.BLACK);
+                                    songsNumberAndTime.setTextColor(Color.BLACK);
                                 }
                                 midBarLayout.setBackground(gd);
                             }
@@ -105,26 +109,24 @@ public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAda
                     }
                 });
 
-        long numAlbumSongs = 0;
-        for(AlbumModel album : albumsList){
-            numAlbumSongs += Long.parseLong(album.getNumberOfSongs());
+        long totalSongLength = 0;
+        for(SongModel song : songsList){
+            totalSongLength += Long.parseLong(song.getDuration());
         }
-        String songsText;
-        String albumsText;
 
         //setting variable text
-        albumsText = (albumsList.size() < 2) ? "album" : "albums";
-        songsText = (numAlbumSongs < 2) ? "song" : "songs";
-        songsNumberAndTimeAlbum.setText(String.format(Locale.getDefault(), "%d %s, %d %s", albumsList.size(), albumsText, numAlbumSongs, songsText));
+        String songsText = (songsList.size() < 2) ? "song" : "songs";
 
-        //using custom adapter to set array of albums into layout
-        albumRecyclerView = view.findViewById(R.id.albumListFromArtistRecyclerView);
-        albumRecyclerView.setHasFixedSize(true);
+        songsNumberAndTime.setText(String.format(Locale.getDefault(), "%d %s (%s)", songsList.size(), songsText, UtilMethods.prettyDuration(totalSongLength)));
+
+        //using custom adapter to set array of songs into layout
+        songRecyclerView = view.findViewById(R.id.songListFromAlbumRecyclerView);
+        songRecyclerView.setHasFixedSize(true);
         gridLayoutManager = new GridLayoutManager(getContext(), 1);
-        albumRecyclerView.setAdapter(new AlbumRowAdapter(albumsList, getContext(), this));
-        albumRecyclerView.setLayoutManager(gridLayoutManager);
+        songRecyclerView.setAdapter(new SongAdapter(songsList, getContext()));
+        songRecyclerView.setLayoutManager(gridLayoutManager);
 
-        backButton.setOnClickListener(v -> moveBackfromArtistAlbum());
+        backButton.setOnClickListener(v -> moveBackFromAlbum());
 
         return view;
     }
@@ -132,33 +134,26 @@ public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAda
     @Override
     public void onResume() {
         super.onResume();
-        if(albumRecyclerView != null){
-            albumRecyclerView.setAdapter(new AlbumRowAdapter(albumsList, getContext(), this));
+        if(songRecyclerView != null){
+            songRecyclerView.setAdapter(new SongAdapter(songsList, getContext()));
         }
     }
 
-
-    public void moveBackfromArtistAlbum(){
-        mListener.moveBackFromArtistAlbum();
-    }
-    @Override
-    public void toSongsListFromAlbumRow(ArrayList<MusicModel> songsList){
+    public void moveBackFromAlbum(){
         //gets argument from the adapter and calls the method to take back to the main activity
-        mListener.toSongsListFromAlbumRowFragment(songsList);
+        mListener.moveBackFromAlbum();
     }
 
-    AlbumListFromArtistFragmentListener mListener;
+    SongListFromAlbumFragmentListener mListener;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mListener = (AlbumListFromArtistFragmentListener) context;
+        mListener = (SongListFromAlbumFragmentListener) context;
     }
 
-    public interface AlbumListFromArtistFragmentListener{
-        //method to send songsList back to the main activity
-        void toSongsListFromAlbumRowFragment(ArrayList<MusicModel> songsList);
-        void moveBackFromArtistAlbum();
+    public interface SongListFromAlbumFragmentListener{
+        //moves back from the songs list inside an album
+        void moveBackFromAlbum();
     }
-
 }

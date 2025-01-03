@@ -1,4 +1,4 @@
-package com.example.comet.Song;
+package com.example.comet.song;
 
 import android.os.Bundle;
 
@@ -13,29 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
-import com.example.comet.Album.AlbumModel;
-import com.example.comet.Artist.ArtistAdapter;
-import com.example.comet.Constants;
-import com.example.comet.R;
-import com.example.comet.ViewModel.SongViewModel;
+import com.example.comet.viewmodel.SongViewModel;
+import com.example.comet.databinding.FragmentMainDisplayBinding;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class SongFragment extends Fragment {
     private final String TAG = "Looking for errors";
     private RecyclerView songRecyclerView;
-    private GridLayoutManager gridLayoutManager;
-    private ArrayList<MusicModel> musicList;
-    private ArrayList<AlbumModel> albumList;
     private SongViewModel songViewModel;
     private SongAdapter songAdapter;
+    private FragmentMainDisplayBinding binding;
 
 
     public SongFragment() {
@@ -50,24 +40,25 @@ public class SongFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_main_display, container, false);
-
-        //using custom song adapter to set array of songs into layout
-        songRecyclerView = view.findViewById(R.id.albumListFromArtistRecyclerView);
-        songRecyclerView.setHasFixedSize(true);
-        gridLayoutManager = new GridLayoutManager(getContext(), 1);
-        songAdapter = new SongAdapter(new ArrayList<>(), getContext());
-        songRecyclerView.setAdapter(songAdapter);
-        songRecyclerView.setLayoutManager(gridLayoutManager);
-
-        return view;
+        // Use Data Binding to inflate the layout
+        binding = FragmentMainDisplayBinding.inflate(inflater, container, false);
+        return binding.getRoot(); // Return the root view of the binding
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
+
+        // Bind ViewModel to layout
+        binding.setSongViewModel(songViewModel);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
+
+        // RecyclerView setup
+        songAdapter = new SongAdapter(new ArrayList<>(), requireContext());
+        binding.albumListFromArtistRecyclerView.setHasFixedSize(true);
+        binding.albumListFromArtistRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        binding.albumListFromArtistRecyclerView.setAdapter(songAdapter);
 
         songViewModel.getSongList().observe(getViewLifecycleOwner(), songs -> {
             songAdapter.updateSongs(songs);
@@ -77,10 +68,6 @@ public class SongFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-    }
-
-    public void sortSongs(Comparator<MusicModel> comparator, boolean isDescending) {
-        songViewModel.sortSongs();
     }
 
     public void linkScrollBar(SeekBar seekBar) {
@@ -114,24 +101,5 @@ public class SongFragment extends Fragment {
         });
 
     }
-
-
-
-    //    @Override
-//    public void onAttach(@NonNull Context context){
-//        super.onAttach(context);
-//
-//        if(context instanceof IMainDisplayFragmentListener){
-//            mListener = (IMainDisplayFragmentListener) context;
-//        } else{
-//            throw new RuntimeException(context.toString() + "must implement IListener");
-//        }
-//    }
-//
-//    IMainDisplayFragmentListener mListener;
-//
-//    public interface IMainDisplayFragmentListener{
-//
-//    }
 
 }

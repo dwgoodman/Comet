@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.comet.util.Constants;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class NowPlayingBottomFragment extends Fragment {

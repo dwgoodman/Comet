@@ -1,4 +1,4 @@
-package com.example.comet;
+package com.example.comet.util;
 
 import android.net.Uri;
 

@@ -41,7 +41,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.comet.Song.MusicModel;
+import com.example.comet.song.SongModel;
+import com.example.comet.util.Constants;
+import com.example.comet.util.UtilMethods;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -434,7 +436,7 @@ public class ExoMusicPlayer extends AppCompatActivity {
 
     }
 
-    private MediaItem getMediaItem(MusicModel song) {
+    private MediaItem getMediaItem(SongModel song) {
         MediaItem mediaItem =
                 new MediaItem.Builder()
                         .setMediaId("media-1")
@@ -444,7 +446,7 @@ public class ExoMusicPlayer extends AppCompatActivity {
         return mediaItem;
     }
 
-    private MediaMetadata getMetadata(MusicModel song) {
+    private MediaMetadata getMetadata(SongModel song) {
         return new MediaMetadata.Builder()
                 .setTitle(song.getTitle())
                 .setArtist(song.getArtist())

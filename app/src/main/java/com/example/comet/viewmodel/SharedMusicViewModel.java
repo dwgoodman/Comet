@@ -1,4 +1,4 @@
-package com.example.comet.ViewModel;
+package com.example.comet.viewmodel;
 
 public class SharedMusicViewModel {
 }

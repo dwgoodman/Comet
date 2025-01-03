@@ -1,4 +1,4 @@
-package com.example.comet.Artist;
+package com.example.comet.artist;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -15,8 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.comet.Album.AlbumModel;
-import com.example.comet.Constants;
+import com.example.comet.album.AlbumModel;
+import com.example.comet.util.Constants;
 import com.example.comet.R;
 
 import java.util.ArrayList;

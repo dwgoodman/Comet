@@ -1,4 +1,4 @@
-package com.example.comet.Playlist;
+package com.example.comet.playlist;
 
 import android.os.Bundle;
 
@@ -10,10 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.comet.Artist.ArtistAdapter;
-import com.example.comet.Artist.ArtistFragment;
-import com.example.comet.Artist.ArtistModel;
-import com.example.comet.Constants;
+import com.example.comet.util.Constants;
 import com.example.comet.R;
 
 import java.util.ArrayList;

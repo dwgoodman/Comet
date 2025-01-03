@@ -1,4 +1,4 @@
-package com.example.comet.Artist;
+package com.example.comet.artist;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.example.comet.Album.AlbumModel;
-import com.example.comet.Constants;
+import com.example.comet.album.AlbumModel;
+import com.example.comet.util.Constants;
 import com.example.comet.R;
 
 import java.util.ArrayList;

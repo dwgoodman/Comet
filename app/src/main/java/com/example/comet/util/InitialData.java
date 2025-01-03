@@ -1,4 +1,4 @@
-package com.example.comet;
+package com.example.comet.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;

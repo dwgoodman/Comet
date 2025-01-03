@@ -1,4 +1,4 @@
-package com.example.comet.Album;
+package com.example.comet.album;
 
 import android.os.Parcel;
 import android.os.Parcelable;

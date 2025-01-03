@@ -1,4 +1,4 @@
-package com.example.comet.Album;
+package com.example.comet.album;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.comet.Constants;
+import com.example.comet.song.SongModel;
+import com.example.comet.util.Constants;
 import com.example.comet.R;
-import com.example.comet.Song.MusicModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.viewHo
     private final ArrayList<AlbumModel> albumList;
     private final Context context;
     private final AlbumRowAdapter.IAlbumRowAdapterInterface mListener;
-    private ArrayList<MusicModel> songsList;
+    private ArrayList<SongModel> songsList;
 
     public AlbumRowAdapter(ArrayList<AlbumModel> albumList, Context context, AlbumRowAdapter.IAlbumRowAdapterInterface mListener){
         this.albumList = albumList;
@@ -77,7 +77,7 @@ public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.viewHo
                 songsList = new ArrayList<>();
                 //iterating over selected parameters and adding to the custom model
                 while(cursor.moveToNext()){
-                    MusicModel musicData = new MusicModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+                    SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
                     if(new File(musicData.getPath()).exists()) {
                         songsList.add(musicData);
                     }
@@ -113,6 +113,6 @@ public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.viewHo
     }
 
     public interface IAlbumRowAdapterInterface {
-        void toSongsListFromAlbumRow(ArrayList<MusicModel> songsList);
+        void toSongsListFromAlbumRow(ArrayList<SongModel> songsList);
     }
 }

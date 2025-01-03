@@ -1,4 +1,4 @@
-package com.example.comet.Album;
+package com.example.comet.album;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -17,12 +17,12 @@ import android.widget.HorizontalScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.comet.Artist.ArtistAdapter;
-import com.example.comet.Constants;
-import com.example.comet.Song.MusicModel;
-import com.example.comet.Song.SongFragment;
+import com.example.comet.artist.ArtistAdapter;
+import com.example.comet.song.SongModel;
+import com.example.comet.util.Constants;
+import com.example.comet.song.SongFragment;
 import com.example.comet.R;
-import com.example.comet.Song.SongAdapter;
+import com.example.comet.song.SongAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -148,7 +148,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapte
     }
 
     @Override
-    public void toSongsListFromAlbums(ArrayList<MusicModel> songsList){
+    public void toSongsListFromAlbums(ArrayList<SongModel> songsList){
         //gets argument from the adapter and calls the method to take back to the main activity
         mListener.toSongListFromAlbumFragment(songsList);
     }
@@ -163,7 +163,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapte
 
     public interface AlbumFragmentListener{
         //method to send songsList back to the main activity
-        void toSongListFromAlbumFragment(ArrayList<MusicModel> songsList);
+        void toSongListFromAlbumFragment(ArrayList<SongModel> songsList);
     }
 
 }

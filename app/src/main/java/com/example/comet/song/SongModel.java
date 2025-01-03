@@ -1,4 +1,4 @@
-package com.example.comet.Song;
+package com.example.comet.song;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 //had to implement parcelable, don't know if I need to take Serializable out or not
 //hopefully can still be used as a normal class, we'll see idk man
-public class MusicModel implements Serializable, Parcelable {
+public class SongModel implements Serializable, Parcelable {
     String path;
     String title;
     String duration;
@@ -16,19 +16,19 @@ public class MusicModel implements Serializable, Parcelable {
     String albumId;
     String dateAdded;
 
-    public MusicModel(Parcel in) {
+    public SongModel(Parcel in) {
         super();
         readFromParcel(in);
     }
 
-    public static final Parcelable.Creator<MusicModel> CREATOR = new Parcelable.Creator<MusicModel>() {
-        public MusicModel createFromParcel(Parcel in) {
-            return new MusicModel(in);
+    public static final Parcelable.Creator<SongModel> CREATOR = new Parcelable.Creator<SongModel>() {
+        public SongModel createFromParcel(Parcel in) {
+            return new SongModel(in);
         }
 
-        public MusicModel[] newArray(int size) {
+        public SongModel[] newArray(int size) {
 
-            return new MusicModel[size];
+            return new SongModel[size];
         }
 
     };
@@ -58,7 +58,7 @@ public class MusicModel implements Serializable, Parcelable {
     }
 
 
-    public MusicModel(String path, String title, String duration, String artist, String album, String albumId, String dateAdded) {
+    public SongModel(String path, String title, String duration, String artist, String album, String albumId, String dateAdded) {
         this.path = path;
         this.title = title;
         this.duration = duration;
