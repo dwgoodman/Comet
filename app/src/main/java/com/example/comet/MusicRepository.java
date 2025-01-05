@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 
 import com.example.comet.album.AlbumModel;
+import com.example.comet.artist.ArtistModel;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.InitialData;
 
@@ -64,13 +65,13 @@ public class MusicRepository {
         };
 
         //query the media store for my selected audio parameters
-        Cursor cursor1 = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection1, null, null, null);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection1, null, null, null);
 
-        while (cursor1.moveToNext()) {
-            AlbumModel albumData = new AlbumModel(cursor1.getString(0), cursor1.getString(1), cursor1.getString(2), cursor1.getString(3), cursor1.getString(4), cursor1.getString(5));
+        while (cursor.moveToNext()) {
+            AlbumModel albumData = new AlbumModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
             albumList.add(albumData);
         }
-        cursor1.close();
+        cursor.close();
         return albumList;
     }
 
@@ -101,6 +102,53 @@ public class MusicRepository {
         }
         cursor.close();
         return songsList;
+    }
+
+    public List<ArtistModel> queryArtists(){
+        ArrayList<ArtistModel> artistList = new ArrayList<>();
+        String[] projection2 = {
+                MediaStore.Audio.Artists._ID,
+                MediaStore.Audio.Artists.ARTIST,
+                MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
+        };
+
+        //query the media store for my selected audio parameters
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, projection2, null, null, null);
+
+
+        //iterating over selected parameters and adding to the custom model
+        while(cursor.moveToNext()){
+            ArtistModel artistData = new ArtistModel(cursor.getString(0), cursor.getString(1), cursor.getString(2));
+            artistList.add(artistData);
+        }
+        cursor.close();
+        return artistList;
+    }
+
+    public ArrayList<AlbumModel> queryArtist(ArtistModel artist){
+        String[] projection1 = {
+                MediaStore.Audio.Albums._ID,
+                MediaStore.Audio.Albums.ARTIST,
+                MediaStore.Audio.Albums.ALBUM,
+                MediaStore.Audio.Albums.ALBUM_ART,
+                MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+                MediaStore.Audio.Albums.FIRST_YEAR
+        };
+
+        //only taking music from media store
+        String selection = MediaStore.Audio.Media.ARTIST_ID + "= " + artist.getId();
+
+        //query the media store for my selected audio parameters
+        Cursor cursor1 = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection1, selection, null, null);
+
+        ArrayList<AlbumModel> albumsList = new ArrayList<>();
+
+        while(cursor1.moveToNext()){
+            AlbumModel albumData = new AlbumModel(cursor1.getString(0), cursor1.getString(1), cursor1.getString(2), cursor1.getString(3), cursor1.getString(4), cursor1.getString(5));
+            albumsList.add(albumData);
+        }
+        cursor1.close();
+        return albumsList;
     }
 
 

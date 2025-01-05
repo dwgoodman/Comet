@@ -55,9 +55,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.BindingViewH
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Creating music repository to query the album for its song list
                 MusicRepository musicRepository = new MusicRepository(context);
                 songsList = musicRepository.queryAlbum(album);
-
 
                 //sending songs list from AlbumAdapter to AlbumFragment
                 mListener.toSongsListFromAlbums(songsList);

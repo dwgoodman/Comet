@@ -57,9 +57,6 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapte
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            albumsList = (ArrayList<AlbumModel>) getArguments().get(Constants.ALBUMS_PARAM);
-        }
     }
 
     @Override

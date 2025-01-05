@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.comet.album.AlbumModel;
 import com.example.comet.artist.ArtistModel;
 
 import java.util.ArrayList;
@@ -12,33 +13,22 @@ import java.util.List;
 
 public class ArtistViewModel extends ViewModel {
     private final MutableLiveData<List<ArtistModel>> artistList = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isDescending = new MutableLiveData<>(true);
-
     public LiveData<List<ArtistModel>> getArtistList() {
         return artistList;
     }
 
-    public LiveData<Boolean> getSortOrder() {
-        return isDescending;
-    }
-
-    public void loadArtistList(List<ArtistModel> data) {
+    public void loadArtists(List<ArtistModel> data) {
         artistList.setValue(data);
     }
 
-    public void toggleSortOrder() {
-        isDescending.setValue(!Boolean.TRUE.equals(isDescending.getValue()));
-        sortArtists();
-    }
-
-    public void sortArtists() {
+    public void sortArtists(Comparator<ArtistModel> comparator, boolean isDescending) {
         if (artistList.getValue() != null) {
             List<ArtistModel> sortedList = new ArrayList<>(artistList.getValue());
-            Comparator<ArtistModel> comparator = Comparator.comparing(ArtistModel::getArtist);
-            if (Boolean.FALSE.equals(isDescending.getValue())) {
-                comparator = comparator.reversed();
+            if (!isDescending) {
+                sortedList.sort(comparator.reversed());
+            } else {
+                sortedList.sort(comparator);
             }
-            sortedList.sort(comparator);
             artistList.setValue(sortedList);
         }
     }

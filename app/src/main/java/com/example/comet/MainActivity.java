@@ -88,25 +88,8 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         List<AlbumModel> queriedAlbums = musicRepository.queryAlbums();
         albumViewModel.loadAlbums(queriedAlbums);
 
-
-        //todo maybe see if I can use one cursor instead of many, used many to make sure no errors came up between threads when retrieving
-        String[] projection2 = {
-                MediaStore.Audio.Artists._ID,
-                MediaStore.Audio.Artists.ARTIST,
-                MediaStore.Audio.Artists.NUMBER_OF_ALBUMS
-        };
-
-        //query the media store for my selected audio parameters
-        Cursor cursor2 = getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, projection2, null, null, null);
-
-
-        //iterating over selected parameters and adding to the custom model
-        while(cursor2.moveToNext()){
-            ArtistModel artistData = new ArtistModel(cursor2.getString(0), cursor2.getString(1), cursor2.getString(2));
-            artistList.add(artistData);
-        }
-        cursor2.close();
-
+        List<ArtistModel> queriedArtists = musicRepository.queryArtists();
+        artistViewModel.loadArtists(queriedArtists);
 
         setUpTabs(musicList, albumList, artistList);
 
@@ -130,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
             } else if (currentFragment instanceof AlbumFragment) {
                 showSortOptionsDialog(albumViewModel);
             } else if (currentFragment instanceof ArtistFragment) {
-                showSortOptionsDialog((ArtistFragment) currentFragment);
+                showSortOptionsDialog(artistViewModel);
             }
         });
 
@@ -430,13 +413,13 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
                 .show();
     }
 
-    private void showSortOptionsDialog(ArtistFragment fragment) {
-        String[] sortOptions = {"Album Name", "Artist", "Release Year"};
+    private void showSortOptionsDialog(ArtistViewModel artistViewModel) {
+        String[] sortOptions = {"Artist Name"};
         new AlertDialog.Builder(this)
-                .setTitle("Sort Albums By")
+                .setTitle("Sort Artists By")
                 .setItems(sortOptions, (dialog, which) -> {
-                    if (which == 0) { // Album Name
-                        fragment.sortAlbums(Comparator.comparing(ArtistModel::getArtist), isDescending);
+                    if (which == 0) { // Artist Name
+                        artistViewModel.sortArtists(Comparator.comparing(ArtistModel::getArtist), isDescending);
                     }
                 })
                 .show();

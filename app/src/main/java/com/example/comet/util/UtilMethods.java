@@ -1,5 +1,9 @@
 package com.example.comet.util;
 
+import android.widget.TextView;
+
+import androidx.databinding.BindingAdapter;
+
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +26,15 @@ public class UtilMethods {
             return String.format(Locale.getDefault(), "%s:%s", getMinutes(milliseconds), getSeconds(milliseconds));
         }
 
+    }
+
+    @BindingAdapter("albumCountText")
+    public static void formatAlbumCount(TextView textView, String numAlbums) {
+        if(Integer.parseInt(numAlbums) > 1){
+            textView.setText(String.format("%s albums", numAlbums));
+        }else{
+            textView.setText(String.format("%s album", numAlbums));
+        }
     }
 
 }

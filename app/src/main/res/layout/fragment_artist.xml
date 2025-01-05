@@ -1,23 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayoutAlbum"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="#393838"
-    tools:context=".song.SongFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="artistViewModel"
+            type="com.example.comet.viewmodel.ArtistViewModel" />
+    </data>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/albumListFromArtistRecyclerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frameLayoutAlbum"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         android:background="#393838"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:context=".album.AlbumFragment">
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/albumListFromArtistRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#393838"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

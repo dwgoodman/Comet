@@ -1,46 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="70dp"
-    android:layout_width="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#393838">
+    <data>
+        <variable
+            name="artist"
+            type="com.example.comet.artist.ArtistModel" />
+        <import
+            type="com.example.comet.util.UtilMethods" />
+    </data>
 
-        <TextView
-            android:id="@+id/artistNameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="21dp"
-            android:layout_marginTop="13dp"
-            android:text="TextView"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@+id/artistImage"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.cardview.widget.CardView
+        android:layout_height="70dp"
+        android:layout_width="match_parent">
 
-        <TextView
-            android:id="@+id/albumNumberText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="21dp"
-            android:layout_marginTop="8dp"
-            android:text="TextView"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@+id/artistImage"
-            app:layout_constraintTop_toBottomOf="@+id/artistNameText" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#393838">
 
-        <ImageView
-            android:id="@+id/artistImage"
-            android:layout_width="59dp"
-            android:layout_height="59dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/chiaki" />
+            <TextView
+                android:id="@+id/artistNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="21dp"
+                android:layout_marginTop="13dp"
+                android:text="@{artist.artist}"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toEndOf="@+id/artistImage"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/albumNumberText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="21dp"
+                android:layout_marginTop="8dp"
+                app:albumCountText="@{artist.numAlbums}"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toEndOf="@+id/artistImage"
+                app:layout_constraintTop_toBottomOf="@+id/artistNameText" />
+
+            <ImageView
+                android:id="@+id/artistImage"
+                android:layout_width="59dp"
+                android:layout_height="59dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/hoshi" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</layout>
