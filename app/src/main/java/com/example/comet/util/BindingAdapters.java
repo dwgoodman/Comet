@@ -11,7 +11,7 @@ import com.example.comet.R;
 
 public class BindingAdapters {
 
-    //placed used and tested SongAdapter
+    //placed used and tested SongAdapter, AlbumAdapter
     @BindingAdapter("albumArt")
     public static void loadAlbumArt(ImageView view, String albumId) {
         if (albumId != null) {

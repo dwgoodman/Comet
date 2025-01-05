@@ -50,11 +50,11 @@ public class SongFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
 
-        // Bind ViewModel to layout
+        //Bind ViewModel to layout
         binding.setSongViewModel(songViewModel);
         binding.setLifecycleOwner(getViewLifecycleOwner());
 
-        // RecyclerView setup
+        //RecyclerView setup
         songAdapter = new SongAdapter(new ArrayList<>(), requireContext());
         binding.albumListFromArtistRecyclerView.setHasFixedSize(true);
         binding.albumListFromArtistRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));

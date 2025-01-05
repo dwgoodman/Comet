@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,52 +20,32 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.comet.artist.ArtistAdapter;
+import com.example.comet.databinding.FragmentAlbumBinding;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.Constants;
 import com.example.comet.song.SongFragment;
 import com.example.comet.R;
 import com.example.comet.song.SongAdapter;
+import com.example.comet.viewmodel.AlbumViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AlbumFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapterInterface{
 
     private final String TAG = "Looking for errors";
-
-    HorizontalScrollView topBarScrollView;
-    //    ListView mainBodyListView;
     RecyclerView albumRecyclerView;
-    private LinearLayoutManager linearLayoutManager;
-    private GridLayoutManager gridLayoutManager;
-    Button playlistButton;
-    Button artistButton;
-    Button genreButton;
-    Button songButton;
-    Button albumButton;
-    TextView songNameText;
-    TextView songArtistText;
-    TextView songDurationText;
-    SongAdapter songAdapter;
-    ArtistAdapter artistAdapter;
     private ArrayList<AlbumModel> albumsList;
+    private FragmentAlbumBinding binding;
+    private AlbumViewModel albumViewModel;
+    private AlbumAdapter albumAdapter;
 
 
     public AlbumFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters
-     * @return A new instance of fragment MainDisplayFragment.
-     */
     public static SongFragment newInstance(ArrayList<AlbumModel> albumsList) {
         SongFragment fragment = new SongFragment();
         Bundle args = new Bundle();
@@ -83,39 +65,35 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_album, container, false);
-
-        //using custom song adapter to set a hardcoded array of songs into
-        albumRecyclerView = view.findViewById(R.id.albumListFromArtistRecyclerView);
-        albumRecyclerView.setHasFixedSize(true);
-        linearLayoutManager = new LinearLayoutManager(getContext());
-        gridLayoutManager = new GridLayoutManager(getContext(), 2);
-        albumRecyclerView.setAdapter(new AlbumAdapter(albumsList, getContext(), this));
-        albumRecyclerView.setLayoutManager(gridLayoutManager);
-
-        return view;
+        // Use Data Binding to inflate layout
+        binding = FragmentAlbumBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
-    //I forget why this was set but I think it was to prevent a null pointer when refreshing the page
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //Bind ViewModel to layout
+        albumViewModel = new ViewModelProvider(requireActivity()).get(AlbumViewModel.class);
+        binding.setAlbumViewModel(albumViewModel);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
+
+        //Setup RecyclerView
+        albumAdapter = new AlbumAdapter(new ArrayList<>(), requireContext(), this);
+        binding.albumListFromArtistRecyclerView.setHasFixedSize(true);
+        binding.albumListFromArtistRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        binding.albumListFromArtistRecyclerView.setAdapter(albumAdapter);
+
+        //Observe LiveData and update adapter
+        albumViewModel.getAlbumList().observe(getViewLifecycleOwner(), albums -> {
+            albumAdapter.updateAlbums(albums);
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        if(albumRecyclerView != null){
-            albumRecyclerView.setAdapter(new AlbumAdapter(albumsList, getContext(), this));
-        }
-    }
-
-    public void sortAlbums(Comparator<AlbumModel> comparator, boolean isDescending) {
-        if (albumsList != null && !albumsList.isEmpty()) {
-            // Reverse comparator if ascending
-            if (!isDescending) {
-                comparator = comparator.reversed();
-            }
-
-            Collections.sort(albumsList, comparator);
-            albumRecyclerView.getAdapter().notifyDataSetChanged();
-        }
     }
 
     public void linkScrollBar(SeekBar seekBar) {

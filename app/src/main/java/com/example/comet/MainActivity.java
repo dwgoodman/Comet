@@ -73,41 +73,21 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
             return;
         }
 
-        //grabbing data from Media Store
+        //Creating ViewModels
         MusicRepository musicRepository = new MusicRepository(this);
         SongViewModelFactory factory = new SongViewModelFactory(musicRepository);
         SongViewModel songViewModel = new ViewModelProvider(this, factory).get(SongViewModel.class);
-
-        List<SongModel> queriedSongs = musicRepository.querySongs();
-        songViewModel.loadSongs(queriedSongs);
-
-        //todo finish these setups
-        //ViewModel integration
         AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
         ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
         PlaylistViewModel playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
 
+        //grabbing data from Media Store and loading in ViewModels
+        List<SongModel> queriedSongs = musicRepository.querySongs();
+        songViewModel.loadSongs(queriedSongs);
 
+        List<AlbumModel> queriedAlbums = musicRepository.queryAlbums();
+        albumViewModel.loadAlbums(queriedAlbums);
 
-
-        //creating new projection/cursor to fill albumModel
-        String[] projection1 = {
-                MediaStore.Audio.Albums._ID,
-                MediaStore.Audio.Albums.ARTIST,
-                MediaStore.Audio.Albums.ALBUM,
-                MediaStore.Audio.Albums.ALBUM_ART,
-                MediaStore.Audio.Albums.NUMBER_OF_SONGS,
-                MediaStore.Audio.Albums.FIRST_YEAR
-        };
-
-        //query the media store for my selected audio parameters
-        Cursor cursor1 = getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, projection1, null, null, null);
-
-        while(cursor1.moveToNext()){
-            AlbumModel albumData = new AlbumModel(cursor1.getString(0), cursor1.getString(1), cursor1.getString(2), cursor1.getString(3), cursor1.getString(4), cursor1.getString(5));
-            albumList.add(albumData);
-        }
-        cursor1.close();
 
         //todo maybe see if I can use one cursor instead of many, used many to make sure no errors came up between threads when retrieving
         String[] projection2 = {
@@ -148,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
             if (currentFragment instanceof SongFragment) {
                 showSortOptionsDialog(songViewModel);
             } else if (currentFragment instanceof AlbumFragment) {
-                showSortOptionsDialog((AlbumFragment) currentFragment);
+                showSortOptionsDialog(albumViewModel);
             } else if (currentFragment instanceof ArtistFragment) {
                 showSortOptionsDialog((ArtistFragment) currentFragment);
             }
@@ -430,20 +410,20 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
                 .show();
     }
 
-    private void showSortOptionsDialog(AlbumFragment fragment) {
+    private void showSortOptionsDialog(AlbumViewModel albumViewModel) {
         String[] sortOptions = {"Album Name", "Artist", "Release Year"};
         new AlertDialog.Builder(this)
                 .setTitle("Sort Albums By")
                 .setItems(sortOptions, (dialog, which) -> {
                     switch (which) {
                         case 0: // Album Name
-                            fragment.sortAlbums(Comparator.comparing(AlbumModel::getAlbum), isDescending);
+                            albumViewModel.sortAlbums(Comparator.comparing(AlbumModel::getAlbum), isDescending);
                             break;
                         case 1: // Artist
-                            fragment.sortAlbums(Comparator.comparing(AlbumModel::getAlbumArtist), isDescending);
+                            albumViewModel.sortAlbums(Comparator.comparing(AlbumModel::getAlbumArtist), isDescending);
                             break;
                         case 2: // Release Year
-                            fragment.sortAlbums(Comparator.comparing(AlbumModel::getFirstYear), isDescending);
+                            albumViewModel.sortAlbums(Comparator.comparing(AlbumModel::getFirstYear), isDescending);
                             break;
                     }
                 })

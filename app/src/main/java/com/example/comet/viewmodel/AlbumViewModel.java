@@ -7,38 +7,28 @@ import androidx.lifecycle.ViewModel;
 import com.example.comet.album.AlbumModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class AlbumViewModel extends ViewModel {
     private final MutableLiveData<List<AlbumModel>> albumList = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isDescending = new MutableLiveData<>(true);
-
     public LiveData<List<AlbumModel>> getAlbumList() {
         return albumList;
     }
 
-    public LiveData<Boolean> getSortOrder() {
-        return isDescending;
-    }
-
-    public void loadAlbumList(List<AlbumModel> data) {
+    public void loadAlbums(List<AlbumModel> data) {
         albumList.setValue(data);
     }
 
-    public void toggleSortOrder() {
-        isDescending.setValue(!Boolean.TRUE.equals(isDescending.getValue()));
-        sortAlbums();
-    }
-
-    public void sortAlbums() {
+    public void sortAlbums(Comparator<AlbumModel> comparator, boolean isDescending) {
         if (albumList.getValue() != null) {
             List<AlbumModel> sortedList = new ArrayList<>(albumList.getValue());
-            Comparator<AlbumModel> comparator = Comparator.comparing(AlbumModel::getAlbum);
-            if (Boolean.FALSE.equals(isDescending.getValue())) {
-                comparator = comparator.reversed();
+            if (!isDescending) {
+                sortedList.sort(comparator.reversed());
+            } else {
+                sortedList.sort(comparator);
             }
-            sortedList.sort(comparator);
             albumList.setValue(sortedList);
         }
     }
