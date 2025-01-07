@@ -17,9 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -32,6 +30,7 @@ import com.example.comet.album.AlbumModel;
 import com.example.comet.artist.ArtistFragment;
 import com.example.comet.artist.ArtistModel;
 import com.example.comet.playlist.PlaylistFragment;
+import com.example.comet.playlist.SongListFromPlaylistFragment;
 import com.example.comet.song.SongModel;
 import com.example.comet.song.SongFragment;
 import com.example.comet.song.SongListFromAlbumFragment;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements  AlbumFragment.AlbumFragmentListener, ArtistFragment.ArtistFragmentListener, AlbumListFromArtistFragment.AlbumListFromArtistFragmentListener, SongListFromAlbumFragment.SongListFromAlbumFragmentListener {
+public class MainActivity extends AppCompatActivity implements  AlbumFragment.AlbumFragmentListener, ArtistFragment.ArtistFragmentListener, AlbumListFromArtistFragment.AlbumListFromArtistFragmentListener, SongListFromAlbumFragment.SongListFromAlbumFragmentListener, PlaylistFragment.PlaylistFragmentListener {
 
     ArrayList<SongModel> musicList = new ArrayList<>();
     ArrayList<AlbumModel> albumList = new ArrayList<>();
@@ -186,6 +185,14 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
     public void toAlbumListFromArtistFragment(ArrayList<AlbumModel> albumsList){
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainContainer, AlbumListFromArtistFragment.newInstance(albumsList))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void toSongListFromPlaylistFragment(List<SongModel> songsList){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.mainContainer, SongListFromPlaylistFragment.newInstance(songsList))
                 .addToBackStack(null)
                 .commit();
     }

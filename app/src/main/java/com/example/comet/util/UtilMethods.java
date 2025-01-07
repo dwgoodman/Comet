@@ -37,4 +37,13 @@ public class UtilMethods {
         }
     }
 
+    @BindingAdapter("songCountText")
+    public static void formatSongCount(TextView textView, String numSongs) {
+        if(Integer.parseInt(numSongs) > 1){
+            textView.setText(String.format("%s songs", numSongs));
+        }else{
+            textView.setText(String.format("%s song", numSongs));
+        }
+    }
+
 }

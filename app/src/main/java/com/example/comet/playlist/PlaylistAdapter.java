@@ -10,11 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.comet.R;
+import com.example.comet.databinding.PlaylistRowItemBinding;
+import com.example.comet.song.SongModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHolder>{
+public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.BindingViewHolder>{
     private List<PlaylistModel> playlistList;
     private final Context context;
     private final IPlaylistAdapterInterface mListener;
@@ -27,27 +29,23 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.playlist_row_item, parent, false);
-        return new ViewHolder(view);
+    public BindingViewHolder  onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        PlaylistRowItemBinding binding = PlaylistRowItemBinding.inflate(inflater, parent, false);
+        return new BindingViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        //todo create the playlist holding database
-        //todo populate the playlist with songs
-        //todo fetch the songs in each playlist here unless I do something different with LiveData
-//        PlaylistModel playlist = playlistList.get(position);
-//
-//        holder.playlistNameText.setText(playlist.getName());
-//        holder.songCountText.setText(String.format("%d songs", playlist.getSongs().size()));
-//
-//        holder.itemView.setOnClickListener(v -> {
-//            if (mListener != null) {
-//                mListener.onPlaylistSelected(playlist);
-//            }
-//        });
+    public void onBindViewHolder(@NonNull BindingViewHolder  holder, int position) {
+        PlaylistModel playlist = playlistList.get(position);
+        holder.binding.setPlaylist(playlist); // Data Binding handles setting text
+        holder.binding.executePendingBindings();
 
+        holder.itemView.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.toSongListFromPlaylistFragment(playlist.getSongs());
+            }
+        });
     }
 
     @Override
@@ -61,18 +59,16 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView playlistNameText;
-        TextView songCountText;
+    static class BindingViewHolder extends RecyclerView.ViewHolder {
+        final PlaylistRowItemBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            playlistNameText = itemView.findViewById(R.id.playlistNameText);
-            songCountText = itemView.findViewById(R.id.playlistSongCountText);
+        BindingViewHolder(PlaylistRowItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 
     public interface IPlaylistAdapterInterface {
-        void onPlaylistSelected(ArrayList<PlaylistModel> playlist);
+        void toSongListFromPlaylistFragment(List<SongModel> songsList);
     }
 }

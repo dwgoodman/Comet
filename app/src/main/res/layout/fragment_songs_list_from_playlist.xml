@@ -8,7 +8,7 @@
         android:fitsSystemWindows="true"
         android:clickable="true"
         android:background="@color/main_background"
-        tools:context=".playlist.SongsListFromPlaylistFragment">
+        tools:context=".playlist.SongListFromPlaylistFragment">
 
         <RelativeLayout
             android:id="@+id/relativeLayoutPlaylist"
