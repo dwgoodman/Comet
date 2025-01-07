@@ -30,6 +30,7 @@ import com.example.comet.album.AlbumModel;
 import com.example.comet.artist.ArtistFragment;
 import com.example.comet.artist.ArtistModel;
 import com.example.comet.playlist.PlaylistFragment;
+import com.example.comet.playlist.PlaylistModel;
 import com.example.comet.playlist.SongListFromPlaylistFragment;
 import com.example.comet.song.SongModel;
 import com.example.comet.song.SongFragment;
@@ -190,9 +191,9 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
     }
 
     @Override
-    public void toSongListFromPlaylistFragment(List<SongModel> songsList){
+    public void toSongListFromPlaylistFragment(PlaylistModel playlist){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mainContainer, SongListFromPlaylistFragment.newInstance(songsList))
+                .replace(R.id.mainContainer, SongListFromPlaylistFragment.newInstance(playlist))
                 .addToBackStack(null)
                 .commit();
     }

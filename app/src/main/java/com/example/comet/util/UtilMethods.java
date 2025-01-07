@@ -4,6 +4,9 @@ import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 
+import com.example.comet.song.SongModel;
+
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 

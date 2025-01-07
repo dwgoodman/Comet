@@ -81,12 +81,12 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.IPlayl
     }
 
     @Override
-    public void toSongListFromPlaylistFragment(List<SongModel> songsList) {
+    public void toSongListFromPlaylistFragment(PlaylistModel playlist) {
         //gets argument from the adapter and calls the method to take back to the main activity
-        mListener.toSongListFromPlaylistFragment(songsList);
+        mListener.toSongListFromPlaylistFragment(playlist);
     }
 
     public interface PlaylistFragmentListener{
-        void toSongListFromPlaylistFragment(List<SongModel> songsList);
+        void toSongListFromPlaylistFragment(PlaylistModel playlist);
     }
 }

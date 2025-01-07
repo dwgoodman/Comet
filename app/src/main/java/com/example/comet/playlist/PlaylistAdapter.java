@@ -43,7 +43,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Bindin
 
         holder.itemView.setOnClickListener(v -> {
             if (mListener != null) {
-                mListener.toSongListFromPlaylistFragment(playlist.getSongs());
+                mListener.toSongListFromPlaylistFragment(playlist);
             }
         });
     }
@@ -69,6 +69,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Bindin
     }
 
     public interface IPlaylistAdapterInterface {
-        void toSongListFromPlaylistFragment(List<SongModel> songsList);
+        void toSongListFromPlaylistFragment(PlaylistModel playlist);
     }
 }
