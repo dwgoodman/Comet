@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +22,7 @@ import com.example.comet.databinding.AlbumItemBinding;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.Constants;
 import com.example.comet.R;
+import com.example.comet.viewmodel.SongListFromAlbumViewModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,8 +62,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.BindingViewH
                 MusicRepository musicRepository = new MusicRepository(context);
                 songsList = musicRepository.queryAlbum(album);
 
+                //Storing data in the ViewModel to be retrieved later
+                SongListFromAlbumViewModel viewModel = new ViewModelProvider((FragmentActivity) context).get(SongListFromAlbumViewModel.class);
+                viewModel.setAlbumData(album.getId(), songsList);
+
                 //sending songs list from AlbumAdapter to AlbumFragment
-                mListener.toSongsListFromAlbums(songsList);
+                mListener.toSongsListFromAlbums();
             }
         });
 
@@ -87,7 +94,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.BindingViewH
     }
 
     public interface IAlbumAdapterInterface {
-        void toSongsListFromAlbums(ArrayList<SongModel> songsList);
+        void toSongsListFromAlbums();
     }
 
 }

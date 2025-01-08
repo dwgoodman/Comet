@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
         PlaylistViewModel playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
 
+        //todo need to update for playlist when persistent data is set up
         //grabbing data from Media Store and loading in ViewModels
         List<SongModel> queriedSongs = musicRepository.querySongs();
         songViewModel.loadSongs(queriedSongs);
@@ -165,9 +166,9 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         }
     }
     @Override
-    public void toSongListFromAlbumFragment(ArrayList<SongModel> songsList){
+    public void toSongListFromAlbumFragment(){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance(songsList))
+                .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
     @Override
     public void toSongsListFromAlbumRowFragment(ArrayList<SongModel> songsList) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance(songsList))
+                .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
@@ -233,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         ArtistFragment artistFragment = new ArtistFragment();
         artistFragment.setArguments(bundle2);
 
-        //todo update to actually use playlistList when it is created
+        //todo update to actually use playlistList when persistent data is set up
         Bundle bundle3 = new Bundle();
         bundle3.putParcelableArrayList(Constants.PLAYLISTS_PARAM, artistList);
         PlaylistFragment playlistFragment = new PlaylistFragment();

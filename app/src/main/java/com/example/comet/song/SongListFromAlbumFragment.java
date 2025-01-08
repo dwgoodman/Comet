@@ -13,10 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,33 +29,32 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.comet.databinding.FragmentSongListFromAlbumBinding;
 import com.example.comet.util.Constants;
 import com.example.comet.R;
 import com.example.comet.util.UtilMethods;
+import com.example.comet.viewmodel.SongListFromAlbumViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class SongListFromAlbumFragment extends Fragment {
 
-    private RecyclerView songRecyclerView;
-    private ImageView songAlbumImage;
-    private  ImageView backButton;
-    private TextView songsNumberAndTime;
-    private ConstraintLayout midBarLayout;
+    private FragmentSongListFromAlbumBinding binding;
+    private SongListFromAlbumViewModel viewModel;
+    private SongAdapter adapter;
     private GridLayoutManager gridLayoutManager;
-    private ArrayList<SongModel> songsList;
+//    private ArrayList<SongModel> songsList;
 
 
     public SongListFromAlbumFragment() {
         // Required empty public constructor
     }
 
-
-    public static SongListFromAlbumFragment newInstance(ArrayList<SongModel> songsList) {
+    public static SongListFromAlbumFragment newInstance() {
         SongListFromAlbumFragment fragment = new SongListFromAlbumFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(Constants.SONGS_PARAM, songsList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,83 +62,47 @@ public class SongListFromAlbumFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            songsList = (ArrayList<SongModel>) getArguments().get(Constants.SONGS_PARAM);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout. fragment_song_list_from_album, container, false);
+        binding = FragmentSongListFromAlbumBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        songAlbumImage = view.findViewById(R.id.artistAlbumImageSong);
-        songsNumberAndTime = view.findViewById(R.id.songsNumberAndTime);
-        midBarLayout = view.findViewById(R.id.midbarLayoutSong);
-        backButton = view.findViewById(R.id.backButtonSong);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(requireActivity()).get(SongListFromAlbumViewModel.class);
+        binding.setSongListFromAlbumViewModel(viewModel);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
 
+        adapter = new SongAdapter(new ArrayList<>(), requireContext());
+        binding.songListFromAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.songListFromAlbumRecyclerView.setAdapter(adapter);
 
-        Uri uri = ContentUris.withAppendedId(Constants.sArtworkUri,
-                Long.parseLong(songsList.get(0).getAlbumId()));
-        Glide.with(getContext()).asBitmap().load(uri).placeholder(R.drawable.background_for_load)
-                .error(R.drawable.hoshi).centerCrop().into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        songAlbumImage.setImageBitmap(resource);
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                            public void onGenerated(Palette palette) {
-                                Palette.Swatch swatch = palette.getVibrantSwatch();
-                                GradientDrawable gd;
-                                if (swatch != null) {
-                                    //swatch.getRgb in both slots will create a solid effect, can find a better color for gradient if wanted
-                                    gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{swatch.getRgb(), swatch.getRgb()});
-                                    songsNumberAndTime.setTextColor(swatch.getTitleTextColor());
-                                }else {
-                                    gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x38393838, 0x38393838});
-                                    songsNumberAndTime.setTextColor(Color.BLACK);
-                                }
-                                midBarLayout.setBackground(gd);
-                            }
+        // Observe song list updates
+        viewModel.getAlbumSongs().observe(getViewLifecycleOwner(), adapter::updateSongs);
 
-                        });
-                    }
+        // Observe LiveData and update UI
+        viewModel.getAlbumId().observe(getViewLifecycleOwner(), albumId -> {
+        });
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
+        // Observe song count and duration updates
+        viewModel.getSongCountAndDuration().observe(getViewLifecycleOwner(), countAndTime -> {
+            binding.songsNumberAndTime.setText(countAndTime);
+        });
 
-                    }
-                });
+        //Moves back to the tab list
+        binding.backButtonSong.setOnClickListener(v -> moveBackFromAlbum());
 
-        long totalSongLength = 0;
-        for(SongModel song : songsList){
-            totalSongLength += Long.parseLong(song.getDuration());
-        }
-
-        //setting variable text
-        String songsText = (songsList.size() < 2) ? "song" : "songs";
-
-        songsNumberAndTime.setText(String.format(Locale.getDefault(), "%d %s (%s)", songsList.size(), songsText, UtilMethods.prettyDuration(totalSongLength)));
-
-        //using custom adapter to set array of songs into layout
-        songRecyclerView = view.findViewById(R.id.songListFromAlbumRecyclerView);
-        songRecyclerView.setHasFixedSize(true);
-        gridLayoutManager = new GridLayoutManager(getContext(), 1);
-        songRecyclerView.setAdapter(new SongAdapter(songsList, getContext()));
-        songRecyclerView.setLayoutManager(gridLayoutManager);
-
-        backButton.setOnClickListener(v -> moveBackFromAlbum());
-
-        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(songRecyclerView != null){
-            songRecyclerView.setAdapter(new SongAdapter(songsList, getContext()));
-        }
     }
 
     public void moveBackFromAlbum(){

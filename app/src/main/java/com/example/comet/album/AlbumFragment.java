@@ -123,9 +123,9 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapte
     }
 
     @Override
-    public void toSongsListFromAlbums(ArrayList<SongModel> songsList){
+    public void toSongsListFromAlbums(){
         //gets argument from the adapter and calls the method to take back to the main activity
-        mListener.toSongListFromAlbumFragment(songsList);
+        mListener.toSongListFromAlbumFragment();
     }
 
     AlbumFragmentListener mListener;
@@ -138,7 +138,7 @@ public class AlbumFragment extends Fragment implements AlbumAdapter.IAlbumAdapte
 
     public interface AlbumFragmentListener{
         //method to send songsList back to the main activity
-        void toSongListFromAlbumFragment(ArrayList<SongModel> songsList);
+        void toSongListFromAlbumFragment();
     }
 
 }
