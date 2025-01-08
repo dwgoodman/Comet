@@ -12,23 +12,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.comet.MusicRepository;
+import com.example.comet.databinding.AlbumRowItemBinding;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.Constants;
 import com.example.comet.R;
+import com.example.comet.viewmodel.SongListFromAlbumViewModel;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
-public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.viewHolder> {
-    private final ArrayList<AlbumModel> albumList;
+public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.BindingViewHolder> {
+    private final List<AlbumModel> albumList;
     private final Context context;
-    private final AlbumRowAdapter.IAlbumRowAdapterInterface mListener;
+    private final IAlbumRowAdapterInterface mListener;
     private ArrayList<SongModel> songsList;
 
-    public AlbumRowAdapter(ArrayList<AlbumModel> albumList, Context context, AlbumRowAdapter.IAlbumRowAdapterInterface mListener){
+    public AlbumRowAdapter(ArrayList<AlbumModel> albumList, Context context, IAlbumRowAdapterInterface  mListener){
         this.albumList = albumList;
         this.context = context;
         this.mListener = mListener;
@@ -36,58 +42,31 @@ public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.viewHo
 
     @NonNull
     @Override
-    public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.album_row_item, parent, false);
-        return new AlbumRowAdapter.viewHolder(view, mListener);
+    public BindingViewHolder  onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        AlbumRowItemBinding binding = AlbumRowItemBinding.inflate(inflater, parent, false);
+        return new BindingViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        AlbumModel albumData = albumList.get(position);
-
-        holder.albumNameText.setText(albumData.getAlbum());
-        holder.albumYear.setText(albumData.getFirstYear());
-
-        Uri uri = ContentUris.withAppendedId(Constants.sArtworkUri,
-                Long.parseLong(albumData.getId()));
-        Glide.with(context).asBitmap().load(uri).placeholder(R.drawable.background_for_load).error(R.drawable.hoshi).centerCrop().into(holder.albumArt);
+    public void onBindViewHolder(@NonNull BindingViewHolder  holder, int position) {
+        AlbumModel album = albumList.get(position);
+        holder.binding.setAlbum(album);
+        holder.binding.executePendingBindings();
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(context, SongListFromAlbumFragment.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                context.startActivity(intent);
-                String[] projection = {
-                        MediaStore.Audio.Media.DATA,
-                        MediaStore.Audio.Media.TITLE,
-                        MediaStore.Audio.Media.DURATION,
-                        MediaStore.Audio.Media.ARTIST,
-                        MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.ALBUM_ID,
-                        MediaStore.Audio.Media.DATE_ADDED
-                };
+            //Creating music repository to query the album for its song list
+            MusicRepository musicRepository = new MusicRepository(context);
+            songsList = musicRepository.queryAlbum(album);
 
-                //only taking music from media store
-                String selection = MediaStore.Audio.Media.ALBUM_ID + "= " + albumData.getId();
+            //Storing data in the ViewModel to be retrieved later in SongListFromAlbum
+            SongListFromAlbumViewModel viewModel = new ViewModelProvider((FragmentActivity) context).get(SongListFromAlbumViewModel.class);
+            viewModel.setAlbumData(album.getId(), songsList);
 
-                //query the media store for my selected audio parameters
-                Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, null);
-
-                songsList = new ArrayList<>();
-                //iterating over selected parameters and adding to the custom model
-                while(cursor.moveToNext()){
-                    SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
-                    if(new File(musicData.getPath()).exists()) {
-                        songsList.add(musicData);
-                    }
-                }
-                cursor.close();
-
-
-
-                //sending songs list from AlbumRowAdapter to AlbumListFromArtistFragment
-                mListener.toSongsListFromAlbumRow(songsList);
+            //sending songs list from AlbumRowAdapter to AlbumListFromArtistFragment
+            mListener.toSongsListFromAlbumRow();
             }
         });
 
@@ -100,19 +79,22 @@ public class AlbumRowAdapter extends RecyclerView.Adapter<AlbumRowAdapter.viewHo
     }
 
 
-    public class viewHolder extends RecyclerView.ViewHolder {
-        TextView albumNameText;
-        TextView albumYear;
-        ImageView albumArt;
-        public viewHolder(View itemView, AlbumRowAdapter.IAlbumRowAdapterInterface mListener) {
-            super(itemView);
-            albumNameText = itemView.findViewById(R.id.albumNameText);
-            albumArt = itemView.findViewById(R.id.albumImage);
-            albumYear = itemView.findViewById(R.id.albumYear);
+    public void updateAlbums(List<AlbumModel> newAlbums) {
+        albumList.clear();
+        albumList.addAll(newAlbums);
+        notifyDataSetChanged();
+    }
+
+    static class BindingViewHolder extends RecyclerView.ViewHolder {
+        final AlbumRowItemBinding binding;
+
+        BindingViewHolder(AlbumRowItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 
     public interface IAlbumRowAdapterInterface {
-        void toSongsListFromAlbumRow(ArrayList<SongModel> songsList);
+        void toSongsListFromAlbumRow();
     }
 }

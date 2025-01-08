@@ -75,6 +75,7 @@ public class MusicRepository {
         return albumList;
     }
 
+    //List of Songs in a single passed in Album
     public ArrayList<SongModel> queryAlbum(AlbumModel album){
         String[] projection = {
                 MediaStore.Audio.Media.DATA,
@@ -104,6 +105,7 @@ public class MusicRepository {
         return songsList;
     }
 
+    //List of all Artists queried for in MainActivity
     public List<ArtistModel> queryArtists(){
         ArrayList<ArtistModel> artistList = new ArrayList<>();
         String[] projection2 = {
@@ -125,6 +127,7 @@ public class MusicRepository {
         return artistList;
     }
 
+    //List of Albums for a single passed in Artist
     public ArrayList<AlbumModel> queryArtist(ArtistModel artist){
         String[] projection1 = {
                 MediaStore.Audio.Albums._ID,

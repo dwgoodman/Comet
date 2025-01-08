@@ -124,14 +124,14 @@ public class ArtistFragment extends Fragment implements ArtistAdapter.IArtistAda
     }
 
     @Override
-    public void toAlbumsListFromArtists(ArrayList<AlbumModel> albumsList) {
+    public void toAlbumsListFromArtists() {
         //gets argument from the adapter and calls the method to take back to the main activity
-        mListener.toAlbumListFromArtistFragment(albumsList);
+        mListener.toAlbumListFromArtistFragment();
     }
 
     public interface ArtistFragmentListener{
 
         //method to send songsList back to the main activity
-        void toAlbumListFromArtistFragment(ArrayList<AlbumModel> albumsList);
+        void toAlbumListFromArtistFragment();
     }
 }

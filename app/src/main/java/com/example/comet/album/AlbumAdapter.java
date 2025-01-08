@@ -62,7 +62,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.BindingViewH
                 MusicRepository musicRepository = new MusicRepository(context);
                 songsList = musicRepository.queryAlbum(album);
 
-                //Storing data in the ViewModel to be retrieved later
+                //Storing data in the ViewModel to be retrieved later in SongListFromAlbum
                 SongListFromAlbumViewModel viewModel = new ViewModelProvider((FragmentActivity) context).get(SongListFromAlbumViewModel.class);
                 viewModel.setAlbumData(album.getId(), songsList);
 

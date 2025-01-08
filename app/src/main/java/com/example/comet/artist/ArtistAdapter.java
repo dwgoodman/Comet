@@ -6,11 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.comet.MusicRepository;
+import com.example.comet.album.AlbumListFromArtistFragment;
 import com.example.comet.album.AlbumModel;
 import com.example.comet.databinding.ArtistRowItemBinding;
+import com.example.comet.viewmodel.AlbumListFromArtistViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +52,12 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.BindingVie
                 MusicRepository musicRepository = new MusicRepository(context);
                 albumsList = musicRepository.queryArtist(artist);
 
-                //sending albums list from ArtistAdapter to ArtistFragment
-                mListener.toAlbumsListFromArtists(albumsList);
+                //Storing data in the ViewModel to be retrieved later in AlbumListFromArtist
+                AlbumListFromArtistViewModel viewModel = new ViewModelProvider((FragmentActivity) context).get(AlbumListFromArtistViewModel.class);
+                viewModel.setAlbumData(albumsList != null ? albumsList.get(0).getId() : "", albumsList);
+
+                //Changing fragment from artists list to album list
+                mListener.toAlbumsListFromArtists();
             }
         });
     }
@@ -74,7 +82,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.BindingVie
 
     public interface IArtistAdapterInterface {
         //method to pass list of songs in album back to fragment
-        void toAlbumsListFromArtists(ArrayList<AlbumModel> albumsList);
+        void toAlbumsListFromArtists();
     }
 
 }

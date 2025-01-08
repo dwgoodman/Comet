@@ -83,14 +83,14 @@ public class SongListFromAlbumFragment extends Fragment {
         binding.songListFromAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.songListFromAlbumRecyclerView.setAdapter(adapter);
 
-        // Observe song list updates
+        //Observe song list updates
         viewModel.getAlbumSongs().observe(getViewLifecycleOwner(), adapter::updateSongs);
 
-        // Observe LiveData and update UI
+        //Observe LiveData and update UI
         viewModel.getAlbumId().observe(getViewLifecycleOwner(), albumId -> {
         });
 
-        // Observe song count and duration updates
+        //Observe song count and duration updates
         viewModel.getSongCountAndDuration().observe(getViewLifecycleOwner(), countAndTime -> {
             binding.songsNumberAndTime.setText(countAndTime);
         });

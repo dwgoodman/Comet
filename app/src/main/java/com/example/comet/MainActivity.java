@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
 
 
     @Override
-    public void toSongsListFromAlbumRowFragment(ArrayList<SongModel> songsList) {
+    public void toSongsListFromAlbumRowFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainContainer, SongListFromAlbumFragment.newInstance())
                 .addToBackStack(null)
@@ -184,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
     }
 
     @Override
-    public void toAlbumListFromArtistFragment(ArrayList<AlbumModel> albumsList){
+    public void toAlbumListFromArtistFragment(){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mainContainer, AlbumListFromArtistFragment.newInstance(albumsList))
+                .replace(R.id.mainContainer, AlbumListFromArtistFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }
