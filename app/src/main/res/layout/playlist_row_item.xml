@@ -4,7 +4,10 @@
     <data>
         <variable
             name="playlist"
-            type="com.example.comet.playlist.PlaylistModel" />
+            type="com.example.comet.database.PlaylistEntity" />
+        <variable
+            name="playlistViewModel"
+            type="com.example.comet.viewmodel.PlaylistViewModel"/>
         <import
             type="com.example.comet.util.UtilMethods" />
     </data>
@@ -35,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="21dp"
                 android:layout_marginTop="8dp"
-                android:text="@{String.valueOf(playlist.numSongs)}"
+                app:playlistSongCountText="@{playlistViewModel.getSongCount(playlist.playlistId)}"
                 android:textColor="@color/white"
                 app:layout_constraintStart_toEndOf="@+id/playlistImage"
                 app:layout_constraintTop_toBottomOf="@+id/playlistNameText" />

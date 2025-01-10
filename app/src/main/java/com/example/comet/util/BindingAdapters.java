@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
+import androidx.lifecycle.LiveData;
 import androidx.palette.graphics.Palette;
 
 import com.bumptech.glide.Glide;
@@ -90,7 +91,12 @@ public class BindingAdapters {
         }
     }
 
-
+    @BindingAdapter("playlistSongCountText")
+    public static void setPlaylistSongCount(TextView textView, LiveData<Integer> numSongsLiveData) {
+        numSongsLiveData.observeForever(numSongs -> {
+            textView.setText(numSongs + (numSongs == 1 ? " song" : " songs"));
+        });
+    }
 
 
 

@@ -5,15 +5,19 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
+import com.example.comet.database.PlaylistEntity;
 import com.example.comet.databinding.FragmentPlaylistBinding;
 import com.example.comet.song.SongModel;
 import com.example.comet.viewmodel.PlaylistViewModel;
@@ -61,16 +65,50 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.IPlayl
         binding.setPlaylistViewModel(playlistViewModel);
         binding.setLifecycleOwner(getViewLifecycleOwner());
 
-        playlistAdapter = new PlaylistAdapter(new ArrayList<>(), requireContext(), this);
+        //todo this new Array will need to be changed to actually pass in the data from the DB
+        playlistAdapter = new PlaylistAdapter(new ArrayList<>(), requireContext(), playlistViewModel, this);
         binding.songListFromPlaylist.setLayoutManager(new GridLayoutManager(getContext(), 1));
         binding.songListFromPlaylist.setAdapter(playlistAdapter);
 
-        playlistViewModel.getPlaylistList().observe(getViewLifecycleOwner(), playlists -> {
+        playlistViewModel.getAllPlaylists().observe(getViewLifecycleOwner(), playlists -> {
             playlistAdapter.updatePlaylists(playlists);
         });
 
-        playlistViewModel.loadDummyPlaylists();
+        playlistViewModel.getShowAddPlaylistDialog().observe(getViewLifecycleOwner(), shouldShow -> {
+            if (Boolean.TRUE.equals(shouldShow)) {
+                showCreatePlaylistDialog();
+                playlistViewModel.resetAddPlaylistDialog();
+            }
+        });
+
+//        playlistViewModel.loadDummyPlaylists();
     }
+
+    private void showCreatePlaylistDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Create New Playlist");
+
+        final EditText input = new EditText(requireContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("Create", (dialog, which) -> {
+            String playlistName = input.getText().toString().trim();
+            if (!playlistName.isEmpty()) {
+                createPlaylist(playlistName);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void createPlaylist(String name) {
+        PlaylistEntity newPlaylist = new PlaylistEntity(name, false, System.currentTimeMillis());
+        playlistViewModel.insertPlaylist(newPlaylist);
+    }
+
 
     PlaylistFragmentListener mListener;
 
@@ -81,12 +119,12 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.IPlayl
     }
 
     @Override
-    public void toSongListFromPlaylistFragment(PlaylistModel playlist) {
+    public void toSongListFromPlaylistFragment() {
         //gets argument from the adapter and calls the method to take back to the main activity
-        mListener.toSongListFromPlaylistFragment(playlist);
+        mListener.toSongListFromPlaylistFragment();
     }
 
     public interface PlaylistFragmentListener{
-        void toSongListFromPlaylistFragment(PlaylistModel playlist);
+        void toSongListFromPlaylistFragment();
     }
 }

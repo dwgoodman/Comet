@@ -64,36 +64,6 @@ public class AlbumListFromArtistFragment extends Fragment implements AlbumRowAda
                              Bundle savedInstanceState) {
         binding = FragmentAlbumListFromArtistBinding.inflate(inflater, container, false);
         return binding.getRoot();
-//        Uri uri = ContentUris.withAppendedId(Constants.sArtworkUri,
-//                Long.parseLong(albumsList.get(0).getId()));
-//        Glide.with(getContext()).asBitmap().load(uri).placeholder(R.drawable.background_for_load)
-//                .error(R.drawable.hoshi).centerCrop().into(new CustomTarget<Bitmap>() {
-//                    @Override
-//                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                        albumArtistImage.setImageBitmap(resource);
-//                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-//                            public void onGenerated(Palette palette) {
-//                                Palette.Swatch swatch = palette.getVibrantSwatch();
-//                                GradientDrawable gd;
-//                                if (swatch != null) {
-//                                    //swatch.getRgb in both slots will create a solid effect, can find a better color for gradient if wanted
-//                                    gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{swatch.getRgb(), swatch.getRgb()});
-//                                    songsNumberAndTimeAlbum.setTextColor(swatch.getTitleTextColor());
-//                                }else {
-//                                    gd = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0x38393838, 0x38393838});
-//                                    songsNumberAndTimeAlbum.setTextColor(Color.BLACK);
-//                                }
-//                                midBarLayout.setBackground(gd);
-//                            }
-//
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onLoadCleared(@Nullable Drawable placeholder) {
-//
-//                    }
-//                });
     }
 
     @Override

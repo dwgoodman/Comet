@@ -44,6 +44,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.BindingViewHol
         holder.binding.setSong(song); // Bind the MusicModel to the layout
         holder.binding.executePendingBindings();
 
+        //todo there is a bug where if you sort the list the special coloring will follow the same row item (not the same song)
+        //i.e. if I have song 1, 2, 3, 4 and 2 is playing and highlighted. After sorting I have 4, 3, 2 and 1 now 3 will be highlighted, but 2 will still be playing
         if(MyMediaPlayer.currentIndex == position){
             holder.binding.songNameText.setTextColor(Color.parseColor("#DCD0FF"));
         }else {

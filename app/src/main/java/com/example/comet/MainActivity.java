@@ -191,10 +191,14 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
                 .commit();
     }
 
+    /*todo clean up this to have it observe from the SongListFromPlaylistFragment instead of passing playlist (similar to others like albumListFromArtist
+    go back to the mListener in the adapter this uses set the data in the SongListFromPlaylistViewModel, then go to the fragment and observe it there
+     */
+
     @Override
-    public void toSongListFromPlaylistFragment(PlaylistModel playlist){
+    public void toSongListFromPlaylistFragment(){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.mainContainer, SongListFromPlaylistFragment.newInstance(playlist))
+                .replace(R.id.mainContainer, SongListFromPlaylistFragment.newInstance())
                 .addToBackStack(null)
                 .commit();
     }

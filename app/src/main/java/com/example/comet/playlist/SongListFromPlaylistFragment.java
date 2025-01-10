@@ -33,10 +33,9 @@ public class SongListFromPlaylistFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SongListFromPlaylistFragment newInstance(PlaylistModel playlist) {
+    public static SongListFromPlaylistFragment newInstance() {
         SongListFromPlaylistFragment fragment = new SongListFromPlaylistFragment();
         Bundle args = new Bundle();
-        args.putParcelable("selectedPlaylist", playlist);
         fragment.setArguments(args);
         return fragment;
     }

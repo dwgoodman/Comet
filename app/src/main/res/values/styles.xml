@@ -3,7 +3,7 @@
     <!-- Base application theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here -->
-        <item name="colorPrimaryDark">#796f9e</item>
+        <item name="colorPrimaryDark">@color/dark_purple</item>
         <item name="colorPrimary">@color/lightPurple</item>
         <item name="colorAccent">@color/suisei</item>
         <item name="android:windowBackground">@color/main_background</item>

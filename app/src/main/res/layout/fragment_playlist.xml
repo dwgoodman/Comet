@@ -26,6 +26,23 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/main_background"
+                android:clickable="true"
+                android:onClick="@{() -> playlistViewModel.onAddPlaylistClicked()}"
+                app:fabCustomSize="70dp"
+                app:maxImageSize="40dp"
+                app:contentPadding="10dp"
+                app:backgroundTint="@color/dark_purple"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/baseline_playlist_add_24" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </layout>

@@ -1,55 +1,64 @@
 package com.example.comet.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.comet.playlist.PlaylistModel;
-import com.example.comet.song.SongModel;
+import com.example.comet.database.PlaylistDao;
+import com.example.comet.database.PlaylistDatabase;
+import com.example.comet.database.PlaylistEntity;
+import com.example.comet.database.PlaylistSongDao;
+import com.example.comet.database.PlaylistSongEntity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 
-public class PlaylistViewModel extends ViewModel {
-    private final MutableLiveData<List<PlaylistModel>> playlistList = new MutableLiveData<>(new ArrayList<>());
+public class PlaylistViewModel extends AndroidViewModel {
+    private final PlaylistDao playlistDao;
+    private final PlaylistSongDao playlistSongDao;
+    private final LiveData<List<PlaylistEntity>> allPlaylists;
+    private final MutableLiveData<Boolean> showAddPlaylistDialog = new MutableLiveData<>();
 
-    public LiveData<List<PlaylistModel>> getPlaylistList() {
-        return playlistList;
+
+    public PlaylistViewModel(@NonNull Application application) {
+        super(application);
+        PlaylistDatabase db = PlaylistDatabase.getInstance(application);
+        playlistDao = db.playlistDao();
+        playlistSongDao = db.playlistSongDao();
+        allPlaylists = playlistDao.getAllPlaylists(); // Fetch from DB instead of MutableLiveData
     }
 
-    public void addPlaylist(String name, List<SongModel> songs) {
-        if (playlistList.getValue() != null) {
-            List<PlaylistModel> updatedList = new ArrayList<>(playlistList.getValue());
-            updatedList.add(new PlaylistModel(name, songs));
-            playlistList.setValue(updatedList);
-        }
+    public LiveData<List<PlaylistEntity>> getAllPlaylists() {
+        return allPlaylists; // Now database-backed LiveData
     }
 
-    public void removePlaylist(String name) {
-        if (playlistList.getValue() != null) {
-            List<PlaylistModel> updatedList = new ArrayList<>(playlistList.getValue());
-            updatedList.removeIf(playlist -> playlist.getName().equals(name));
-            playlistList.setValue(updatedList);
-        }
+    public void insertPlaylist(PlaylistEntity playlist) {
+        Executors.newSingleThreadExecutor().execute(() -> playlistDao.insertPlaylist(playlist));
     }
 
-    public void loadDummyPlaylists() {
-        List<PlaylistModel> playlists = new ArrayList<>();
-
-        List<SongModel> songs = Arrays.asList(
-                new SongModel("path1", "Song One", "200000", "Artist One", "Album One", "1", "162000"),
-                new SongModel("path2", "Song Two", "210000", "Artist Two", "Album Two", "2", "162001")
-        );
-
-        playlists.add(new PlaylistModel("Playlist 1", songs));
-        playlists.add(new PlaylistModel("Playlist 2", songs));
-
-        if (playlistList.getValue() == null) {
-            playlistList.setValue(new ArrayList<>()); // Ensure it's never null
-        }
-
-        playlistList.setValue(playlists);
+    public void deletePlaylist(PlaylistEntity playlist) {
+        Executors.newSingleThreadExecutor().execute(() -> playlistDao.deletePlaylist(playlist));
     }
 
+    public void onAddPlaylistClicked() {
+        showAddPlaylistDialog.setValue(true); // Triggers UI to open the dialog
+    }
+
+    public void resetAddPlaylistDialog() {
+        showAddPlaylistDialog.setValue(false);
+    }
+    public LiveData<Boolean> getShowAddPlaylistDialog() {
+        return showAddPlaylistDialog;
+    }
+
+    public LiveData<List<PlaylistSongEntity>> getSongsInPlaylist(int playlistId) {
+        return playlistSongDao.getSongsInPlaylist(playlistId);
+    }
+
+    public LiveData<Integer> getSongCount(int playlistId) {
+        return playlistSongDao.getSongCountInPlaylist(playlistId);
+    }
 }
