@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
 
 import android.os.IBinder;
 import android.util.Log;
@@ -31,8 +32,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.comet.util.Constants;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+@UnstableApi
 public class NowPlayingBottomFragment extends Fragment {
 
     TextView homeSongTitle, homeSongArtist;

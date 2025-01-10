@@ -6,5 +6,6 @@
     <color name="main_background">#393838</color>
     <color name="lightPurple">#E6E6FA</color>
     <color name="tab_background">#ADADC8</color>
+    <color name="dark_purple">#796f9e</color>
     <color name="suisei">#7AB3F4</color>
 </resources>

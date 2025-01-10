@@ -31,12 +31,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.comet.Song.MusicModel;
+import com.example.comet.song.SongModel;
+import com.example.comet.util.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@UnstableApi
 public class MusicService extends MediaSessionService {
     private static MusicService instance;
 
@@ -283,7 +285,7 @@ public class MusicService extends MediaSessionService {
             Log.d(TAG, "ACTION: " + action);
             switch (action){
                 case Constants.ACTION_PLAY:
-                    ArrayList<MusicModel> songsList = intent.getParcelableArrayListExtra("SONGS");
+                    ArrayList<SongModel> songsList = intent.getParcelableArrayListExtra("SONGS");
                     int position = intent.getIntExtra("POS", 0);
                     if (songsList != null && !songsList.isEmpty()) {
                         player.setMediaItems(getMediaItems(songsList), position, 0);
@@ -467,10 +469,10 @@ public class MusicService extends MediaSessionService {
         }
     }
 
-    private List<MediaItem> getMediaItems(ArrayList<MusicModel> songsList){
+    private List<MediaItem> getMediaItems(ArrayList<SongModel> songsList){
         //turn songs into media items
         List<MediaItem> mediaItems = new ArrayList<>();
-        for(MusicModel song : songsList){
+        for(SongModel song : songsList){
             MediaItem mediaItem = new MediaItem.Builder()
                     .setUri(Uri.fromFile(new File(song.getPath())))
                     .setMediaMetadata(getMetadata(song))
@@ -483,7 +485,7 @@ public class MusicService extends MediaSessionService {
     }
 
 
-    private MediaMetadata getMetadata(MusicModel song) {
+    private MediaMetadata getMetadata(SongModel song) {
         return new MediaMetadata.Builder()
                 .setTitle(song.getTitle())
                 .setArtist(song.getArtist())
