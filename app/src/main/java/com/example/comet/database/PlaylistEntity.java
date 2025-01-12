@@ -23,4 +23,12 @@ public class PlaylistEntity {
         this.isSystemManaged = isSystemManaged;
         this.dateCreated = dateCreated;
     }
+
+    public int getPlaylistId() {
+        return playlistId;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

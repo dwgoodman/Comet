@@ -21,4 +21,7 @@ public interface PlaylistSongDao {
 
     @Query("SELECT COUNT(*) FROM playlist_song_table WHERE playlistId = :playlistId")
     LiveData<Integer> getSongCountInPlaylist(int playlistId);
+
+    @Query("DELETE FROM playlist_song_table")
+    void deleteAllSongs();
 }

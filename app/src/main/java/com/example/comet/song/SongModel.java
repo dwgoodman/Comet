@@ -15,6 +15,7 @@ public class SongModel implements Serializable, Parcelable {
     String album;
     String albumId;
     String dateAdded;
+    String songId;
 
     public SongModel(Parcel in) {
         super();
@@ -41,6 +42,7 @@ public class SongModel implements Serializable, Parcelable {
         album = in.readString();
         albumId = in.readString();
         dateAdded = in.readString();
+        songId = in.readString();
     }
 
     public int describeContents() {
@@ -55,10 +57,11 @@ public class SongModel implements Serializable, Parcelable {
         dest.writeString(album);
         dest.writeString(albumId);
         dest.writeString(dateAdded);
+        dest.writeString(songId);
     }
 
 
-    public SongModel(String path, String title, String duration, String artist, String album, String albumId, String dateAdded) {
+    public SongModel(String path, String title, String duration, String artist, String album, String albumId, String dateAdded, String songId) {
         this.path = path;
         this.title = title;
         this.duration = duration;
@@ -66,6 +69,7 @@ public class SongModel implements Serializable, Parcelable {
         this.album = album;
         this.albumId = albumId;
         this.dateAdded = dateAdded;
+        this.songId = songId;
     }
 
 
@@ -122,5 +126,13 @@ public class SongModel implements Serializable, Parcelable {
     }
     public void setDateAdded(String dateAdded) {
         this.dateAdded = dateAdded;
+    }
+
+    public String getSongId() {
+        return songId;
+    }
+
+    public void setSongId(String songId) {
+        this.songId = songId;
     }
 }

@@ -1,13 +1,16 @@
 package com.example.comet.playlist;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import com.example.comet.R;
 import com.example.comet.databinding.FragmentSongsListFromPlaylistBinding;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.Constants;
+import com.example.comet.viewmodel.PlaylistViewModel;
 import com.example.comet.viewmodel.SongListFromPlaylistViewModel;
 
 import java.util.ArrayList;
@@ -43,9 +47,6 @@ public class SongListFromPlaylistFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            selectedPlaylist = (ArrayList<SongModel>) getArguments().get(Constants.SONGS_PARAM);
-        }
     }
 
     @Override
@@ -59,24 +60,55 @@ public class SongListFromPlaylistFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(SongListFromPlaylistViewModel.class);
-        binding.setSongListFromPlaylistViewModel(viewModel);
-        binding.setLifecycleOwner(getViewLifecycleOwner());
+        PlaylistViewModel playlistViewModel = new ViewModelProvider(requireActivity()).get(PlaylistViewModel.class);
 
-        adapter = new PlaylistSongAdapter(new ArrayList<>(), requireContext(), viewModel);
-        binding.playlistSongRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.playlistSongRecyclerView.setAdapter(adapter);
+        playlistViewModel.getSelectedPlaylistId().observe(getViewLifecycleOwner(), playlistId -> {
+            if (playlistId != null && playlistId != -1) {
+                Log.d("DB_DEBUG", "Fetching songs for Playlist ID: " + playlistId);
 
-        // Observe song list updates
-        viewModel.getPlaylistSongs().observe(getViewLifecycleOwner(), adapter::updateSongs);
+                //Now initialize SongListFromPlaylistViewModel with the correct Playlist ID
+                ViewModelProvider.Factory factory = new ViewModelProvider.Factory() {
+                    @NonNull
+                    @Override
+                    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                        return (T) new SongListFromPlaylistViewModel(requireActivity().getApplication(), playlistId);
+                    }
+                };
 
-        // Load playlist songs if passed through Bundle
-        if (getArguments() != null) {
-            PlaylistModel selectedPlaylist = getArguments().getParcelable("selectedPlaylist");
+                SongListFromPlaylistViewModel songListViewModel = new ViewModelProvider(this, factory).get(SongListFromPlaylistViewModel.class);
+                binding.setSongListFromPlaylistViewModel(songListViewModel); //Set SongListFromPlaylistViewModel in Binding
+                binding.setLifecycleOwner(getViewLifecycleOwner());
 
-            if (selectedPlaylist != null) {
-                viewModel.loadPlaylistSongs(selectedPlaylist.getSongs());
+                adapter = new PlaylistSongAdapter(new ArrayList<>(), requireContext(), songListViewModel);
+                binding.playlistSongRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                binding.playlistSongRecyclerView.setAdapter(adapter);
+
+                //Observe playlist songs
+                songListViewModel.getPlaylistSongs().observe(getViewLifecycleOwner(), songs -> {
+                    Log.d("DB_DEBUG", "Observed Playlist Songs: " + (songs != null ? songs.size() : "null"));
+                    adapter.updateSongs(songs);
+                });
+            } else {
+                Log.d("DB_DEBUG", "Invalid Playlist ID, skipping song fetch.");
             }
-        }
+        });
+
+        //Moves back to the tab list
+        binding.backButtonPlaylist.setOnClickListener(v -> moveBackFromPlaylist());
+    }
+
+    public void moveBackFromPlaylist(){
+        mListener.moveBackFromPlaylist();
+    }
+
+    SongListFromPlaylistFragmentListener mListener;
+
+    public void onAttach(@NonNull Context context){
+        super.onAttach(context);
+        mListener = (SongListFromPlaylistFragmentListener) context;
+    }
+
+    public interface SongListFromPlaylistFragmentListener{
+        void moveBackFromPlaylist();
     }
 }

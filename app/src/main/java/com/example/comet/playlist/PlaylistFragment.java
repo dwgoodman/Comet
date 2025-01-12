@@ -37,10 +37,9 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.IPlayl
         // Required empty public constructor
     }
 
-    public static PlaylistFragment newInstance(ArrayList<PlaylistModel> playlistList) {
+    public static PlaylistFragment newInstance() {
         PlaylistFragment fragment = new PlaylistFragment();
         Bundle args = new Bundle();
-//        args.putParcelableArrayList(Constants.PLAYLISTS_PARAM, playlistList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,7 +80,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.IPlayl
             }
         });
 
-//        playlistViewModel.loadDummyPlaylists();
     }
 
     private void showCreatePlaylistDialog() {

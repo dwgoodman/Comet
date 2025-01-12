@@ -1,10 +1,10 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
-            name="song"
-            type="com.example.comet.song.SongModel" />
+            name="playlistSong"
+            type="com.example.comet.database.PlaylistSongEntity" />
         <import
             type="com.example.comet.util.UtilMethods" />
     </data>
@@ -19,50 +19,50 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/songNameText"
+                android:id="@+id/playlistSongNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="13dp"
-                android:text="@{song.title}"
+                android:text="@{playlistSong.title}"
                 android:textColor="@color/white"
-                app:layout_constraintStart_toEndOf="@+id/songImage"
+                app:layout_constraintStart_toEndOf="@+id/playlistSongImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
             <TextView
-                android:id="@+id/songArtistText"
+                android:id="@+id/playlistSongArtistText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
-                android:text="@{song.artist}"
+                android:text="@{playlistSong.artist}"
                 android:textColor="@color/white"
-                app:layout_constraintStart_toEndOf="@+id/songImage"
-                app:layout_constraintTop_toBottomOf="@+id/songNameText" />
+                app:layout_constraintStart_toEndOf="@+id/playlistSongImage"
+                app:layout_constraintTop_toBottomOf="@+id/playlistSongNameText" />
 
             <ImageView
-                android:id="@+id/songImage"
+                android:id="@+id/playlistSongImage"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                app:albumArt="@{song.albumId}"
+                app:albumArt="@{playlistSong.albumId}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/songDurationText"
+                android:id="@+id/playlistSongDurationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="@{UtilMethods.prettyDuration(Long.parseLong(song.duration))}"
+                android:text="@{UtilMethods.prettyDuration(Long.parseLong(playlistSong.duration))}"
                 android:textColor="@color/white"
-                app:layout_constraintStart_toEndOf="@+id/songArtistText"
-                app:layout_constraintTop_toBottomOf="@+id/songNameText" />
+                app:layout_constraintStart_toEndOf="@+id/playlistSongArtistText"
+                app:layout_constraintTop_toBottomOf="@+id/playlistSongNameText" />
 
             <ImageView
-                android:id="@+id/songOptionsButton"
+                android:id="@+id/playlistSongOptionsButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/baseline_more_vert_24"

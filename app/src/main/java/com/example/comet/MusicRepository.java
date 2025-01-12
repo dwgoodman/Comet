@@ -31,7 +31,8 @@ public class MusicRepository {
                 MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.DATE_ADDED
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media._ID
         };
 
         //only taking music from media store
@@ -43,7 +44,7 @@ public class MusicRepository {
 
         //iterating over selected parameters and adding to the custom model
         while (cursor.moveToNext()) {
-            SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+            SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
             if (new File(musicData.getPath()).exists()) {
                 songList.add(musicData);
             }
@@ -84,7 +85,8 @@ public class MusicRepository {
                 MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.DATE_ADDED
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media._ID
         };
 
         //only taking music from media store
@@ -96,7 +98,7 @@ public class MusicRepository {
         ArrayList<SongModel> songsList = new ArrayList<>();
         //iterating over selected parameters and adding to the custom model
         while(cursor.moveToNext()){
-            SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
+            SongModel musicData = new SongModel(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7));
             if(new File(musicData.getPath()).exists()) {
                 songsList.add(musicData);
             }

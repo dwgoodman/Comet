@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements  AlbumFragment.AlbumFragmentListener, ArtistFragment.ArtistFragmentListener, AlbumListFromArtistFragment.AlbumListFromArtistFragmentListener, SongListFromAlbumFragment.SongListFromAlbumFragmentListener, PlaylistFragment.PlaylistFragmentListener {
+public class MainActivity extends AppCompatActivity implements  AlbumFragment.AlbumFragmentListener, ArtistFragment.ArtistFragmentListener, AlbumListFromArtistFragment.AlbumListFromArtistFragmentListener, SongListFromAlbumFragment.SongListFromAlbumFragmentListener, PlaylistFragment.PlaylistFragmentListener, SongListFromPlaylistFragment.SongListFromPlaylistFragmentListener {
 
     ArrayList<SongModel> musicList = new ArrayList<>();
     ArrayList<AlbumModel> albumList = new ArrayList<>();
@@ -191,10 +191,6 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
                 .commit();
     }
 
-    /*todo clean up this to have it observe from the SongListFromPlaylistFragment instead of passing playlist (similar to others like albumListFromArtist
-    go back to the mListener in the adapter this uses set the data in the SongListFromPlaylistViewModel, then go to the fragment and observe it there
-     */
-
     @Override
     public void toSongListFromPlaylistFragment(){
         getSupportFragmentManager().beginTransaction()
@@ -203,11 +199,13 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
                 .commit();
     }
 
+
+
     public void moveBackFromAlbum(){
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
         } else {
-            super.onBackPressed(); // Handle default back navigation
+            super.onBackPressed();
         }
     }
 
@@ -215,9 +213,20 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
         } else {
-            super.onBackPressed(); // Handle default back navigation
+            super.onBackPressed();
         }
     }
+
+    @Override
+    public void moveBackFromPlaylist() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
 
     void setUpTabs(ArrayList<SongModel> musicList, ArrayList<AlbumModel> albumList, ArrayList<ArtistModel> artistList){
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -238,11 +247,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         ArtistFragment artistFragment = new ArtistFragment();
         artistFragment.setArguments(bundle2);
 
-        //todo update to actually use playlistList when persistent data is set up
-        Bundle bundle3 = new Bundle();
-        bundle3.putParcelableArrayList(Constants.PLAYLISTS_PARAM, artistList);
         PlaylistFragment playlistFragment = new PlaylistFragment();
-        playlistFragment.setArguments(bundle3);
 
         adapter.addFragment(songFragment, "Songs");
         adapter.addFragment(albumFragment, "Albums");

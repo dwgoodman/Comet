@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.comet.database.PlaylistEntity;
+import com.example.comet.database.PlaylistSongEntity;
+import com.example.comet.databinding.SongFromPlaylistRowItemBinding;
 import com.example.comet.databinding.SongRowItemBinding;
 import com.example.comet.song.SongModel;
 import com.example.comet.viewmodel.SongListFromPlaylistViewModel;
@@ -14,11 +17,11 @@ import com.example.comet.viewmodel.SongListFromPlaylistViewModel;
 import java.util.List;
 
 public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapter.BindingViewHolder>{
-    private final List<SongModel> songList;
+    private final List<PlaylistSongEntity> songList;
     private final Context context;
     private final SongListFromPlaylistViewModel viewModel;
 
-    public PlaylistSongAdapter(List<SongModel> songList, Context context, SongListFromPlaylistViewModel viewModel) {
+    public PlaylistSongAdapter(List<PlaylistSongEntity> songList, Context context, SongListFromPlaylistViewModel viewModel) {
         this.songList = songList;
         this.context = context;
         this.viewModel = viewModel;
@@ -28,17 +31,15 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
     @Override
     public BindingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        SongRowItemBinding binding = SongRowItemBinding.inflate(inflater, parent, false);
+        SongFromPlaylistRowItemBinding binding = SongFromPlaylistRowItemBinding .inflate(inflater, parent, false);
         return new BindingViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull BindingViewHolder holder, int position) {
-        SongModel song = songList.get(position);
-        holder.binding.setSong(song);
+        PlaylistSongEntity song = songList.get(position);
+        holder.binding.setPlaylistSong(song);
         holder.binding.executePendingBindings();
-
-
     }
 
     @Override
@@ -46,16 +47,16 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
         return songList.size();
     }
 
-    public void updateSongs(List<SongModel> newSongs) {
+    public void updateSongs(List<PlaylistSongEntity> newSongs) {
         songList.clear();
         songList.addAll(newSongs);
         notifyDataSetChanged();
     }
 
     static class BindingViewHolder extends RecyclerView.ViewHolder {
-        final SongRowItemBinding binding;
+        final SongFromPlaylistRowItemBinding  binding;
 
-        BindingViewHolder(SongRowItemBinding binding) {
+        BindingViewHolder(SongFromPlaylistRowItemBinding  binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

@@ -18,20 +18,35 @@ import androidx.room.ForeignKey;
 public class PlaylistSongEntity {
     @ColumnInfo(name = "playlistId")
     public int playlistId;
-
     @NonNull
     @ColumnInfo(name = "songId")
-    public String songId; // Unique song ID (from MediaStore)
+    public String songId;
+
+    @ColumnInfo(name = "title")
+    public String title;
+
+    @ColumnInfo(name = "artist")
+    public String artist;
+
+    @ColumnInfo(name = "albumId")
+    public String albumId;
+
+    @ColumnInfo(name = "duration")
+    public String duration;
 
     @ColumnInfo(name = "date_added")
-    public long dateAdded; // Timestamp when the song was added to the playlist
+    public long dateAdded;
 
     @ColumnInfo(name = "play_count")
-    public int playCount; // Number of times played (optional)
+    public int playCount;
 
-    public PlaylistSongEntity(int playlistId, String songId, long dateAdded, int playCount) {
+    public PlaylistSongEntity(int playlistId, String songId, String title, String artist, String albumId, String duration, long dateAdded, int playCount) {
         this.playlistId = playlistId;
         this.songId = songId;
+        this.title = title;
+        this.artist = artist;
+        this.albumId = albumId;
+        this.duration = duration;
         this.dateAdded = dateAdded;
         this.playCount = playCount;
     }

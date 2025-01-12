@@ -22,4 +22,7 @@ public interface PlaylistDao {
 
     @Query("SELECT * FROM playlist_table WHERE is_system_managed = 1")
     LiveData<List<PlaylistEntity>> getSystemPlaylists();
+
+    @Query("DELETE FROM playlist_table")
+    void deleteAllPlaylists();
 }
