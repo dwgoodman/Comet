@@ -46,6 +46,18 @@ public class PlaylistViewModel extends AndroidViewModel {
         Executors.newSingleThreadExecutor().execute(() -> playlistDao.deletePlaylist(playlist));
     }
 
+    public void removeSongFromPlaylist(int playlistId, String songId) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            playlistSongDao.deleteSongFromPlaylist(playlistId, songId);
+        });
+    }
+
+    public LiveData<String> getPlaylistCoverImage(int playlistId) {
+        return Transformations.map(playlistSongDao.getFirstSongInPlaylist(playlistId), song ->
+                (song != null && song.albumId != null) ? song.albumId : "0"
+        );
+    }
+
     public void onAddPlaylistClicked() {
         showAddPlaylistDialog.setValue(true); // Triggers UI to open the dialog
     }
@@ -69,6 +81,7 @@ public class PlaylistViewModel extends AndroidViewModel {
         return playlistSongDao.getSongsInPlaylist(playlistId);
     }
 
+    //Purges all playlists when invoked from the PlaylistFragment with playlistViewModel.clearAllPLaylists();
     public void clearAllPlaylists() {
         Executors.newSingleThreadExecutor().execute(() -> {
             playlistDao.deleteAllPlaylists();
@@ -89,7 +102,9 @@ public class PlaylistViewModel extends AndroidViewModel {
                     song.getAlbumId(),
                     song.getDuration(),
                     System.currentTimeMillis(),
-                    0
+                    0,
+                    song.getAlbum(),
+                    song.getPath()
             );
             playlistSongDao.insertSongToPlaylist(songEntry);
         });

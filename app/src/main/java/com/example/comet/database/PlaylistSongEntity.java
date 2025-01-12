@@ -40,7 +40,13 @@ public class PlaylistSongEntity {
     @ColumnInfo(name = "play_count")
     public int playCount;
 
-    public PlaylistSongEntity(int playlistId, String songId, String title, String artist, String albumId, String duration, long dateAdded, int playCount) {
+    @ColumnInfo(name = "album")
+    public String album;
+
+    @ColumnInfo(name = "path")
+    public String path;
+
+    public PlaylistSongEntity(int playlistId, String songId, String title, String artist, String albumId, String duration, long dateAdded, int playCount, String album, String path) {
         this.playlistId = playlistId;
         this.songId = songId;
         this.title = title;
@@ -49,5 +55,7 @@ public class PlaylistSongEntity {
         this.duration = duration;
         this.dateAdded = dateAdded;
         this.playCount = playCount;
+        this.album = album;
+        this.path = path;
     }
 }

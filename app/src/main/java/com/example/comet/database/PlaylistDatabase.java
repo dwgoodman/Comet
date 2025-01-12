@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.concurrent.Executors;
 
-@Database(entities = {PlaylistEntity.class, PlaylistSongEntity.class}, version = 2)
+@Database(entities = {PlaylistEntity.class, PlaylistSongEntity.class}, version = 3)
 public abstract class PlaylistDatabase extends RoomDatabase {
     public abstract PlaylistDao playlistDao();
     public abstract PlaylistSongDao playlistSongDao();

@@ -8,4 +8,5 @@
     <color name="tab_background">#ADADC8</color>
     <color name="dark_purple">#796f9e</color>
     <color name="suisei">#7AB3F4</color>
+    <color name="semiTransparentColor">#70FFFFFF</color>
 </resources>

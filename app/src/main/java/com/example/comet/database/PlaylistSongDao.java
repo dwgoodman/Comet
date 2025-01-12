@@ -24,4 +24,11 @@ public interface PlaylistSongDao {
 
     @Query("DELETE FROM playlist_song_table")
     void deleteAllSongs();
+
+    @Query("SELECT * FROM playlist_song_table WHERE playlistId = :playlistId ORDER BY date_added ASC LIMIT 1")
+    LiveData<PlaylistSongEntity> getFirstSongInPlaylist(int playlistId);
+
+    @Query("DELETE FROM playlist_song_table WHERE playlistId = :playlistId AND songId = :songId")
+    void deleteSongFromPlaylist(int playlistId, String songId);
+
 }

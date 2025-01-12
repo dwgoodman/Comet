@@ -46,8 +46,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Bindin
         holder.binding.setPlaylistViewModel(playlistViewModel);
         holder.binding.executePendingBindings();
 
-
-
         holder.itemView.setOnClickListener(v -> {
             playlistViewModel.setSelectedPlaylistId(playlist.playlistId);
 

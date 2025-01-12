@@ -21,12 +21,21 @@ public class SongListFromPlaylistViewModel extends ViewModel {
     private final LiveData<List<PlaylistSongEntity>> playlistSongs;
     private final MediatorLiveData<String> playlistSize = new MediatorLiveData<>();
     private final PlaylistSongDao playlistSongDao;
+    private final LiveData<String> firstAlbumId;
 
     public SongListFromPlaylistViewModel(Application application, int playlistId) {
         super();
         PlaylistDatabase db = PlaylistDatabase.getInstance(application);
         playlistSongDao = db.playlistSongDao();
         playlistSongs = playlistSongDao.getSongsInPlaylist(playlistId);
+
+        firstAlbumId = Transformations.map(playlistSongs, songs -> {
+            if (songs != null && !songs.isEmpty()) {
+                return songs.get(0).albumId;
+            } else {
+                return "0"; // Default album ID
+            }
+        });
 
         // Observe playlistSongs and update playlistSize dynamically
         playlistSize.addSource(playlistSongs, songs -> {
@@ -44,5 +53,9 @@ public class SongListFromPlaylistViewModel extends ViewModel {
 
     public LiveData<String> getPlaylistSize() {
         return playlistSize;
+    }
+
+    public LiveData<String> getFirstAlbumId() {
+        return firstAlbumId;
     }
 }

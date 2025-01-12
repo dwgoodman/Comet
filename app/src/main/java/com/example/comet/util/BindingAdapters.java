@@ -27,9 +27,6 @@ public class BindingAdapters {
     //placed used and tested SongAdapter, AlbumAdapter
     @BindingAdapter("albumArt")
     public static void loadAlbumArt(ImageView view, String albumId) {
-        if(albumId.equals("")){
-            albumId = "0";
-        }
         if (albumId != null) {
             Uri uri = ContentUris.withAppendedId(Constants.sArtworkUri, Long.parseLong(albumId));
             Glide.with(view.getContext())
