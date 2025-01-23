@@ -113,7 +113,7 @@ public class NowPlayingBottomFragment extends Fragment {
         }
         if (isAdded() && isVisible() && getContext() != null && musicService != null) {
             playbackState = musicService.getPlaybackState();
-            isPlaying = musicService.isPlaying();
+            isPlaying = musicService.getIsPlaying();
             updateUI(playbackState, isPlaying);
         }
     }
@@ -153,10 +153,10 @@ public class NowPlayingBottomFragment extends Fragment {
     private final ServiceConnection musicServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MyServiceBinder binder = (MusicService.MyServiceBinder) service;
-            musicService = binder.getMusicService();
-            isBound = true;
-//            updatePlaybackControls();
+//            MusicService.MyServiceBinder binder = (MusicService.MyServiceBinder) service;
+//            musicService = binder.getMusicService();
+//            isBound = true;
+////            updatePlaybackControls();
         }
 
         @Override

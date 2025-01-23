@@ -73,6 +73,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.BindingViewHol
                 context.startService(intentService);
 
                 Intent intent = new Intent(context, ExoMusicPlayer.class);
+                intent.putExtra("isFromPlaylist", false);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 notifyDataSetChanged();

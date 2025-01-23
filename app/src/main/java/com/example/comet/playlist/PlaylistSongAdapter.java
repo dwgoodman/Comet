@@ -36,11 +36,13 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
     private final List<PlaylistSongEntity> songList;
     private final Context context;
     private final SongListFromPlaylistViewModel viewModel;
+    private final int playlistId;
 
-    public PlaylistSongAdapter(List<PlaylistSongEntity> songList, Context context, SongListFromPlaylistViewModel viewModel) {
+    public PlaylistSongAdapter(List<PlaylistSongEntity> songList, Context context, SongListFromPlaylistViewModel viewModel, int playlistId) {
         this.songList = songList;
         this.context = context;
         this.viewModel = viewModel;
+        this.playlistId = playlistId;
     }
 
     @NonNull
@@ -94,6 +96,8 @@ public class PlaylistSongAdapter extends RecyclerView.Adapter<PlaylistSongAdapte
 
                 Intent intent = new Intent(context, ExoMusicPlayer.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("isFromPlaylist", true);
+                intent.putExtra("playlistId", playlistId);
                 context.startActivity(intent);
                 notifyDataSetChanged();
             }

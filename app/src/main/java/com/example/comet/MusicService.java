@@ -1,9 +1,13 @@
 package com.example.comet;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -15,6 +19,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
@@ -33,6 +39,9 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.Constants;
+import com.example.comet.viewmodel.PlaylistViewModel;
+import com.example.comet.viewmodel.SongListFromPlaylistViewModel;
+import com.example.comet.viewmodel.SongViewModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,7 +49,6 @@ import java.util.List;
 
 @UnstableApi
 public class MusicService extends MediaSessionService {
-    private static MusicService instance;
 
     private static final String CHANNEL_ID = "channel1";
     ExoPlayer player;
@@ -48,26 +56,140 @@ public class MusicService extends MediaSessionService {
     private final int playbackState = PLAYBACK_STATE_IDLE;
     private static final int NOTIFICATION_ID = 111;
     private MediaItem currentSong;
+    private List<MediaItem> mediaItemList = new ArrayList<>();
 
+    private Notification currentNotification;
+    private boolean isForegroundService = false;
     public static final int PLAYBACK_STATE_IDLE = 0;
     private OnCurrentMediaItemChangedListener currentMediaItemChangedListener;
     //in milliseconds
     private static final long UPDATE_INTERVAL = 200;
     private long lastUpdateTime = 0;
-    private final String TAG = "MusicMan";
     private final IBinder serviceBinder = new MyServiceBinder();
     private MediaSession mediaSession = null;
     private int lastPlaybackState = -1;
     private boolean lastIsPlaying = false;
-    private boolean isForegroundService = false;
+
+    private boolean isPlaying = false;
+    private static final String TAG = "MusicService";
+
+    private final IBinder binder = new MusicBinder();
+
+    private MusicService musicService;
+    private boolean isBound = false;
+
+    private String activeListType = "songList";
+
+    private SongViewModel songViewModel;
+    private SongListFromPlaylistViewModel songListFromPlaylistViewModel;
 
 
     public MusicService(){
-        instance = this;
+
     }
 
-    public static synchronized MusicService getInstance(){
-        return instance;
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            musicService = binder.getService();
+            isBound = true;
+            Log.d("MusicService", "Service Bound");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicService = null;
+            isBound = false;
+            Log.d("MusicService", "Service Unbound");
+        }
+    };
+
+    //todo make sure currentSong.mediaId lines up with the use case (i.e. if mediaId tries to search things by songId it might fail)
+    private void savePlaybackState(String activeListType) {
+        if (currentSong != null && currentSong.mediaId != null) {
+            SharedPreferences prefs = getSharedPreferences("music_prefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("last_song_id", currentSong.mediaId);
+            editor.putLong("last_position", player.getCurrentPosition());
+            editor.putString("active_list", activeListType);
+            editor.apply();
+        } else {
+            Log.e("MusicService", "savePlaybackState: currentSong is null, skipping save.");
+        }
+    }
+
+    //todo connect these together, viewmodels, restorePlaybackState, updatesSongViewModel. Will probably need to create new vars for storing the last position of a song or others
+    private void restorePlaybackState() {
+        SharedPreferences prefs = getSharedPreferences("music_prefs", MODE_PRIVATE);
+        String lastSongId = prefs.getString("last_song_id", null);
+        long lastPosition = prefs.getLong("last_position", 0);
+        String activeList = prefs.getString("active_list", "songList");
+
+        if (lastSongId != null) {
+            playSong(lastSongId);
+            player.seekTo(lastPosition);
+
+            if (activeList.equals("playlist")) {
+                songListFromPlaylistViewModel.setLastPlayedSong(lastSongId);
+            } else {
+                songViewModel.setLastPlayedSong(lastSongId);
+            }
+        }
+    }
+
+    private List<MediaItem> convertToMediaItems(List<SongModel> songList) {
+        List<MediaItem> mediaItems = new ArrayList<>();
+        for (SongModel song : songList) {
+            mediaItems.add(MediaItem.fromUri(song.getPath()));
+        }
+        return mediaItems;
+    }
+
+    public void playSong(String songId) {
+        MediaItem mediaItem = findMediaItemById(songId);
+        if (mediaItem != null) {
+            player.setMediaItem(mediaItem);
+            player.prepare();
+            player.play();
+            isPlaying = true;
+        }
+    }
+
+    public void playPlaylist(List<SongModel> songList, int startIndex) {
+        mediaItemList.clear();
+        mediaItemList = getMediaItems(songList);
+        player.setMediaItems(getMediaItems(songList), startIndex, 0);
+        player.prepare();
+        player.play();
+    }
+
+    private MediaItem findMediaItemById(String songId) {
+        for (MediaItem item : mediaItemList) {
+            if (item.mediaId.equals(songId)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public MediaItem getCurrentSong() {
+        return currentSong;
+    }
+
+    private void updateCurrentSong(MediaItem mediaItem) {
+        currentSong = mediaItem;
+
+        if (activeListType.equals("playlist")) {
+            songListFromPlaylistViewModel.setLastPlayedSongMediaItem(mediaItem);
+        } else {
+            songViewModel.setLastPlayedSongMediaItem(mediaItem);
+        }
+    }
+
+    public void setViewModels(SongViewModel songViewModel, SongListFromPlaylistViewModel playlistViewModel) {
+        this.songViewModel = songViewModel;
+        this.songListFromPlaylistViewModel = playlistViewModel;
     }
 
 
@@ -77,10 +199,23 @@ public class MusicService extends MediaSessionService {
         super.onCreate();
         initializeMediaComponents();
 
+        //Create the ExoMusicPlayer
+        createPlayerListener();
+        //Create a PlayerNotificationManager
+        createPlayerNotificationManager();
+
+        //Attach the player to the notification manager
+        playerNotificationManager.setPlayer(player);
+
+    }
+
+    public void createPlayerListener(){
         // Add a Player.Listener for playback-specific events
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
+                isPlaying = player.isPlaying();
+
                 if (playbackState == Player.STATE_READY && player.getPlayWhenReady()) {
                     // Ensure notification is persistent during playback
                     if (!isForegroundService) {
@@ -99,7 +234,8 @@ public class MusicService extends MediaSessionService {
                 Log.e("MusicService", "Player error: " + error.getMessage(), error);
             }
         });
-
+    }
+    public void createPlayerNotificationManager(){
         // Create a PlayerNotificationManager
         playerNotificationManager = new PlayerNotificationManager.Builder(this, NOTIFICATION_ID, CHANNEL_ID)
                 .setMediaDescriptionAdapter(new PlayerNotificationManager.MediaDescriptionAdapter() {
@@ -147,8 +283,16 @@ public class MusicService extends MediaSessionService {
                 .setNotificationListener(new PlayerNotificationManager.NotificationListener() {
                     @Override
                     public void onNotificationPosted(int notificationId, Notification notification, boolean ongoing) {
-                        // Always keep the notification as a foreground service
-                        startForeground(NOTIFICATION_ID, notification);
+                        currentNotification = notification;
+
+                        //Only start foreground service if it has not been started previously
+                        if (ongoing && !isForegroundService) {
+                            startForeground(NOTIFICATION_ID, notification);
+                            isForegroundService = true;
+                        } else if (!ongoing) {
+                            stopForeground(false);
+                            isForegroundService = false;
+                        }
                     }
 
                     @Override
@@ -160,9 +304,6 @@ public class MusicService extends MediaSessionService {
                     }
                 })
                 .build();
-
-        // Attach the player to the notification manager
-        playerNotificationManager.setPlayer(player);
     }
 
     @Nullable
@@ -177,11 +318,11 @@ public class MusicService extends MediaSessionService {
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int playbackState) {
-                sendPlaybackStateBroadcast();
+                isPlaying = player.isPlaying();
             }
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
-                sendTrackChangeBroadcast(mediaItem);
+                updateCurrentSong(mediaItem);
             }
             public void onPlayerError(PlaybackException error) {
                 Log.e(TAG, "Playback error: " + error.getMessage(), error);
@@ -209,43 +350,6 @@ public class MusicService extends MediaSessionService {
 //        stopSelf();
     }
 
-
-    private void sendPlaybackStateBroadcast() {
-        long currentMS = System.currentTimeMillis();
-        int currentPlaybackState = player.getPlaybackState();
-        boolean currentIsPlaying = player.isPlaying();
-
-        if (currentMS - lastUpdateTime >= UPDATE_INTERVAL) {
-            Intent intent = new Intent("PlaybackStateChanged");
-            intent.putExtra("state", currentPlaybackState);
-            intent.putExtra("isPlaying", currentIsPlaying);
-            LocalBroadcastManager.getInstance(MusicService.this).sendBroadcast(intent);
-
-            // Update last state and time
-            lastPlaybackState = currentPlaybackState;
-            lastIsPlaying = currentIsPlaying;
-            lastUpdateTime = currentMS;
-        }
-    }
-
-    private void sendTrackChangeBroadcast(MediaItem mediaItem) {
-        if(mediaItem != null){
-            Intent intent = new Intent("TrackChanged");
-            MediaMetadata metadata = mediaItem.mediaMetadata;
-
-            // Update preferences
-            updateSharedPreferences(metadata);
-
-            intent.putExtra("title", metadata.title);
-            intent.putExtra("artist", metadata.artist);
-            intent.putExtra("albumTitle", metadata.albumTitle);
-            intent.putExtra("duration", metadata.discNumber);
-            intent.putExtra("albumID", metadata.compilation);
-            intent.putExtra("path", metadata.subtitle);
-            intent.putExtra("isPlaying", player.isPlaying());
-            LocalBroadcastManager.getInstance(MusicService.this).sendBroadcast(intent);
-        }
-    }
     public int getCurrentPlaybackState() {
         // Return the current playback state (e.g., PLAYING, PAUSED, STOPPED).
         return playbackState;
@@ -270,61 +374,51 @@ public class MusicService extends MediaSessionService {
 
     // Other methods, such as handling audio focus, releasing resources, etc.
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        super.onBind(intent);
-        return serviceBinder;
-    }
-
     @OptIn(markerClass = UnstableApi.class) @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int result = super.onStartCommand(intent, flags, startId);
-        if(intent != null && intent.getAction() != null){
-            String action = intent.getAction();
-            Log.d(TAG, "ACTION: " + action);
-            switch (action){
-                case Constants.ACTION_PLAY:
-                    ArrayList<SongModel> songsList = intent.getParcelableArrayListExtra("SONGS");
-                    int position = intent.getIntExtra("POS", 0);
-                    if (songsList != null && !songsList.isEmpty()) {
-                        player.setMediaItems(getMediaItems(songsList), position, 0);
-                        player.prepare();
-                        currentSong = player.getCurrentMediaItem();
-                    }
+        super.onStartCommand(intent, flags, startId);
+
+        //Make sure the service starts in foreground if not already started or killed
+        if (!isForegroundService && currentNotification != null) {
+            startForeground(NOTIFICATION_ID, currentNotification);
+            isForegroundService = true;
+        }
+
+        restorePlaybackState();
+        if (intent != null && intent.getAction() != null) {
+            switch (intent.getAction()) {
+                case "PLAY":
                     playMusic();
                     break;
-                case Constants.ACTION_PAUSE:
+                case "PAUSE":
                     pauseMusic();
                     break;
-                case Constants.ACTION_SKIP_NEXT:
-                    skipToNext();
-                    break;
-                case Constants.ACTION_SKIP_PREVIOUS:
-                    skipToPrevious();
-                    break;
-                default:
+                case "STOP":
+                    stopSelf();
                     break;
             }
         }
 
-        return result;
+
+        return START_STICKY;
     }
 
 
     public void playMusic() {
-//        playbackState = PLAYBACK_STATE_PLAYING;
-        player.prepare();
-        player.play();
-        sendPlaybackStateBroadcast();
+        if (player != null) {
+            player.play();
+            isPlaying = true;
+        }
     }
 
     public void pauseMusic() {
-//        playbackState = PLAYBACK_STATE_PAUSED;
-        player.pause();
-        sendPlaybackStateBroadcast();
+        if (player != null) {
+            player.pause();
+            isPlaying = false;
+        }
     }
 
+    //todo needs refactor probably
     public void skipToNext(){
 //        playbackState = PLAYBACK_STATE_SONG_CHANGED;
         if(player.hasNextMediaItem()){
@@ -336,8 +430,9 @@ public class MusicService extends MediaSessionService {
                 currentMediaItemChangedListener.onCurrentMediaItemChanged(currentSong);
             }
         }
-        sendPlaybackStateBroadcast();
+
     }
+    //todo needs refactor probably
     public void skipToPrevious(){
 //        playbackState = PLAYBACK_STATE_SONG_CHANGED;
         if(player.hasPreviousMediaItem()){
@@ -349,7 +444,7 @@ public class MusicService extends MediaSessionService {
                 currentMediaItemChangedListener.onCurrentMediaItemChanged(currentSong);
             }
         }
-        sendPlaybackStateBroadcast();
+
     }
 
     public void seekTo(int position){
@@ -360,10 +455,11 @@ public class MusicService extends MediaSessionService {
         player.seekTo(position);
     }
 
+    //todo needs refactor probably
     public void stopMusic() {
 //        playbackState = PLAYBACK_STATE_STOPPED;
         player.stop();
-        sendPlaybackStateBroadcast();
+
     }
 
     public void releasePlayer(){
@@ -406,8 +502,8 @@ public class MusicService extends MediaSessionService {
         return playbackState;
     }
 
-    public boolean isPlaying(){
-        return player.isPlaying();
+    public boolean getIsPlaying() {
+        return isPlaying;
     }
 
     public interface OnCurrentMediaItemChangedListener {
@@ -420,26 +516,16 @@ public class MusicService extends MediaSessionService {
 
     @OptIn(markerClass = UnstableApi.class) @Override
     public void onDestroy() {
-        // Stop the foreground service
-        // If music is still playing, keep the service foreground
-        // Otherwise, clean up and stop the foreground service
-        stopForeground(player == null || !player.isPlaying()); // Keep the notification
-
-        // Detach player from notification manager
-        if (playerNotificationManager != null) {
-            playerNotificationManager.setPlayer(null);
-        }
-
-        mediaSession.getPlayer().release();
-        mediaSession.release();
-        mediaSession = null;
-
-        savePlaybackState(); // Save playback state when service is stopped
-
+        super.onDestroy();
         if (player != null) {
+            if (currentSong != null) {
+                savePlaybackState(activeListType);
+            }
             player.release();
             player = null;
         }
+        stopForeground(true);
+        stopSelf();
         super.onDestroy();
     }
 
@@ -455,21 +541,7 @@ public class MusicService extends MediaSessionService {
         editor.putString(Constants.ARTIST, (String) metadata.artist);
         editor.apply();
     }
-
-    private void savePlaybackState() {
-        if (player != null && player.getCurrentMediaItem() != null) {
-            MediaMetadata metadata = player.getCurrentMediaItem().mediaMetadata;
-            SharedPreferences.Editor editor = getSharedPreferences("MusicPrefs", MODE_PRIVATE).edit();
-
-            editor.putString("lastSong", metadata.title.toString());
-            editor.putString("lastArtist", metadata.artist.toString());
-            editor.putString("lastAlbum", metadata.albumTitle.toString());
-            editor.putLong("lastPosition", player.getCurrentPosition());
-            editor.apply(); // Save the state
-        }
-    }
-
-    private List<MediaItem> getMediaItems(ArrayList<SongModel> songsList){
+    private List<MediaItem> getMediaItems(List<SongModel> songsList){
         //turn songs into media items
         List<MediaItem> mediaItems = new ArrayList<>();
         for(SongModel song : songsList){
@@ -494,6 +566,19 @@ public class MusicService extends MediaSessionService {
                 .setCompilation(song.getAlbumId())
                 .setSubtitle(song.getPath())
                 .build();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        super.onBind(intent);
+        return binder;
+    }
+
+    public class MusicBinder extends Binder {
+        public MusicService getService() {
+            return MusicService.this;
+        }
     }
 
 

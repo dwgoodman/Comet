@@ -37,8 +37,11 @@ import com.example.comet.song.SongFragment;
 import com.example.comet.song.SongListFromAlbumFragment;
 import com.example.comet.song.SongViewModelFactory;
 import com.example.comet.util.Constants;
+import com.example.comet.viewmodel.AlbumListFromArtistViewModel;
 import com.example.comet.viewmodel.AlbumViewModel;
 import com.example.comet.viewmodel.ArtistViewModel;
+import com.example.comet.viewmodel.SongListFromAlbumViewModel;
+import com.example.comet.viewmodel.SongListFromPlaylistViewModel;
 import com.example.comet.viewmodel.SongViewModel;
 import com.example.comet.viewmodel.PlaylistViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         setContentView(R.layout.activity_main);
 
         TextView noMusicTextView = findViewById(R.id.noMusicTextView);
+        ApplicationClass app = (ApplicationClass) getApplication();
 
         if(!checkPermission()){
             requestPermission();
@@ -74,12 +78,14 @@ public class MainActivity extends AppCompatActivity implements  AlbumFragment.Al
         }
 
         //Creating ViewModels
-        MusicRepository musicRepository = new MusicRepository(this);
-        SongViewModelFactory factory = new SongViewModelFactory(musicRepository);
-        SongViewModel songViewModel = new ViewModelProvider(this, factory).get(SongViewModel.class);
+        MusicRepository musicRepository = new MusicRepository(app);
+        SongViewModelFactory factory = new SongViewModelFactory(app, musicRepository);
+        SongViewModel songViewModel = new ViewModelProvider(app.getViewModelStore(), factory).get(SongViewModel.class);
         AlbumViewModel albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
         ArtistViewModel artistViewModel = new ViewModelProvider(this).get(ArtistViewModel.class);
         PlaylistViewModel playlistViewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
+        AlbumListFromArtistViewModel albumListFromArtistViewModel = new ViewModelProvider(this).get(AlbumListFromArtistViewModel.class);
+        SongListFromAlbumViewModel songListFromAlbumViewModel = new ViewModelProvider(this).get(SongListFromAlbumViewModel.class);
 
         //todo need to update for playlist when persistent data is set up
         //grabbing data from Media Store and loading in ViewModels

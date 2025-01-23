@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
+import com.example.comet.ApplicationClass;
 import com.example.comet.viewmodel.SongViewModel;
 import com.example.comet.databinding.FragmentMainDisplayBinding;
 
@@ -48,7 +49,8 @@ public class SongFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        songViewModel = new ViewModelProvider(requireActivity()).get(SongViewModel.class);
+        ApplicationClass app = (ApplicationClass) requireActivity().getApplication();
+        songViewModel = new ViewModelProvider(app.getViewModelStore(), app.getSongViewModelFactory()).get(SongViewModel.class);
 
         //Bind ViewModel to layout
         binding.setSongViewModel(songViewModel);

@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
@@ -45,6 +46,8 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.comet.song.SongModel;
 import com.example.comet.util.Constants;
 import com.example.comet.util.UtilMethods;
+import com.example.comet.viewmodel.SongListFromPlaylistViewModel;
+import com.example.comet.viewmodel.SongViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -79,6 +82,9 @@ public class ExoMusicPlayer extends AppCompatActivity {
     private String path;
     private static final String PAUSE_TAG = "pauseFrog";
 
+    private SongViewModel songViewModel;
+    private SongListFromPlaylistViewModel playlistSongViewModel;
+
     private final BroadcastReceiver playbackStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -108,11 +114,26 @@ public class ExoMusicPlayer extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ApplicationClass app = (ApplicationClass) getApplication();
+        Intent intent = getIntent();
+        boolean isFromPlaylist = intent.getBooleanExtra("isFromPlaylist", false);
+        int playlistId = intent.getIntExtra("playlistId", -1);
+
+        //todo this may need refactoring later
+        //Potential Issues: I think the playlistSongViewModel still has some inefficiencies in how its implemented, storing/instantiating data it isn't supposed to
+        //I think the factory may be not needed when getting songViewModel and I think the factory probably shouldn't be stored in ApplicationClass
+        if (isFromPlaylist) {
+            playlistSongViewModel = app.getSongListFromPlaylistViewModelProvider(playlistId)
+                    .get(SongListFromPlaylistViewModel.class);
+        } else {
+            songViewModel = new ViewModelProvider(app.getViewModelStore(), app.getSongViewModelFactory()).get(SongViewModel.class);
+        }
+
+
         //bind player instead of creating in this class
         doBindService();
 
         setContentView(R.layout.activity_music_player);
-
         songTitle = findViewById(R.id.songTitle);
         albumAndArtistTitle = findViewById(R.id.albumAndArtistTitle);
         currentTime = findViewById(R.id.currentTime);
@@ -487,6 +508,8 @@ public class ExoMusicPlayer extends AppCompatActivity {
                     setResourcesWithSong();
                 }
             }
+
+            musicService.setViewModels(songViewModel, playlistSongViewModel);
 
             controllerFuture =
                     new MediaController.Builder(ExoMusicPlayer.this, sessionToken).buildAsync();
